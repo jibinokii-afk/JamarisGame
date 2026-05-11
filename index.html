@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#FFD93D" />
+<title>Jamaris Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="home-body">
+<div class="screen active" id="home">
+  <div class="floater" style="top: 18%; left: 8%; animation-delay: 0s;">⭐</div>
+  <div class="floater" style="top: 22%; right: 10%; animation-delay: 1.5s;">🌈</div>
+  <div class="floater" style="bottom: 30%; left: 5%; animation-delay: 3s;">🎈</div>
+  <div class="floater" style="bottom: 35%; right: 6%; animation-delay: 2s;">✨</div>
+
+  <div class="title-wrap">
+    <div class="title">
+      <span>J</span><span>A</span><span>M</span><span>A</span><span>R</span><span>I</span><span>S</span>
+    </div>
+    <div class="subtitle">~ let's play! ~</div>
+  </div>
+
+  <div class="games-grid">
+    <a href="games/coloring.html" class="game-card coloring">
+      <div class="emoji">🎨</div>
+      <div class="label">Coloring</div>
+    </a>
+    <div class="game-card locked">
+      <div class="lock-badge">SOON</div>
+      <div class="emoji">🐾</div>
+      <div class="label">Animal Sounds</div>
+    </div>
+    <div class="game-card locked">
+      <div class="lock-badge">SOON</div>
+      <div class="emoji">🔢</div>
+      <div class="label">Counting</div>
+    </div>
+    <div class="game-card locked">
+      <div class="lock-badge">SOON</div>
+      <div class="emoji">🧩</div>
+      <div class="label">Shapes</div>
+    </div>
+  </div>
+
+  <div class="star-display">
+    <span class="star">⭐</span>
+    <span>Stars: <span id="homeStars">0</span></span>
+  </div>
+</div>
+
+<script src="js/home.js"></script>
+</body>
+</html>
