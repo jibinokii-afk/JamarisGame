@@ -13,9 +13,29 @@
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<div class="screen active" id="coloring">
+
+<!-- PICKER SCREEN -->
+<div class="screen active" id="picker">
   <div class="top-bar">
-    <button class="icon-btn" id="homeBtn" aria-label="Home">🏠</button>
+    <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
+    <div class="mini-stars">⭐ <span id="pickerStars">0</span></div>
+    <div style="width:52px;"></div>
+  </div>
+
+  <div class="picker-title">
+    <h1>Pick an animal!</h1>
+    <p>← swipe →</p>
+  </div>
+
+  <div class="animal-carousel" id="animalCarousel">
+    <!-- Cards inserted by JS -->
+  </div>
+</div>
+
+<!-- COLORING SCREEN -->
+<div class="screen" id="coloring">
+  <div class="top-bar">
+    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
     <div class="mini-stars">⭐ <span id="gameStars">0</span></div>
     <button class="icon-btn" id="nextBtn" aria-label="New animal">🔄</button>
   </div>
@@ -44,18 +64,6 @@
 <!-- Celebration -->
 <div class="celebrate" id="celebrate">
   <div class="msg" id="celebrateMsg">YAY!</div>
-</div>
-
-<!-- Go-home confirmation -->
-<div class="modal-bg" id="homeModal">
-  <div class="modal">
-    <h2>Go home? 🏠</h2>
-    <p style="font-size:1rem; color:#6b6b8a;">Your drawing will be erased.</p>
-    <div class="modal-buttons">
-      <button class="modal-btn no" id="stayBtn">Stay</button>
-      <button class="modal-btn yes" id="leaveBtn">Yes</button>
-    </div>
-  </div>
 </div>
 
 <script src="../js/coloring.js"></script>
