@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#FFD93D" />
+<title>Jamaris Game — Connect Dots</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<!-- PICKER -->
+<div class="screen active" id="picker">
+  <div class="top-bar">
+    <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
+    <div class="mini-stars">⭐ <span id="pickerStars">0</span></div>
+    <div style="width:52px;"></div>
+  </div>
+
+  <div class="picker-title">
+    <h1>Pick a picture!</h1>
+    <p>← swipe →</p>
+  </div>
+
+  <div class="animal-carousel" id="dotsCarousel">
+    <!-- Cards inserted by JS -->
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="game">
+  <div class="top-bar">
+    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
+    <div class="mini-stars">⭐ <span id="gameStars">0</span></div>
+    <button class="icon-btn" id="resetBtn" aria-label="Restart">🔄</button>
+  </div>
+
+  <div class="dots-hint" id="dotsHint">Tap dot <span id="nextNum">1</span></div>
+
+  <div class="dots-wrap" id="dotsWrap">
+    <svg id="dotsSvg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+</div>
+
+<!-- Celebration -->
+<div class="celebrate" id="celebrate">
+  <div class="msg" id="celebrateMsg">YAY!</div>
+</div>
+
+<script src="../js/dots.js"></script>
+</body>
+</html>
