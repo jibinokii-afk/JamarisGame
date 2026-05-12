@@ -1,7 +1,11 @@
 /* ============================================================
-   JAMARIS GAME — shared styles v3 (emoji-based outlines)
+   JAMARIS GAME — Complete stylesheet
+   Replace your entire css/style.css with this file
    ============================================================ */
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --accent: #FF7AD9;
+}
 html, body {
   width: 100%;
   height: 100%;
@@ -25,7 +29,12 @@ body {
 }
 a { text-decoration: none; color: inherit; }
 
-.screen { position: fixed; inset: 0; display: none; flex-direction: column; }
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+}
 .screen.active { display: flex; }
 
 /* ---------- HOME SCREEN ---------- */
@@ -54,18 +63,26 @@ a { text-decoration: none; color: inherit; }
   0%, 100% { transform: translateY(0) rotate(-2deg); }
   50% { transform: translateY(-12px) rotate(2deg); }
 }
-.subtitle {
-  font-size: 1.1rem; font-weight: 600; color: #6b6b8a; margin-top: 8px;
-}
+.subtitle { font-size: 1.1rem; font-weight: 600; color: #6b6b8a; margin-top: 8px; }
 
 .games-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px;
-  width: 100%; max-width: 480px; padding: 10px 4px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  width: 100%;
+  max-width: 480px;
+  padding: 10px 4px;
 }
 .game-card {
-  aspect-ratio: 1; border-radius: 28px; border: 5px solid #2a2a3e;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: pointer; position: relative;
+  aspect-ratio: 1;
+  border-radius: 28px;
+  border: 5px solid #2a2a3e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
   box-shadow: 0 8px 0 #2a2a3e, 0 12px 24px rgba(0,0,0,0.15);
   transition: transform 0.15s, box-shadow 0.15s;
   overflow: hidden;
@@ -76,105 +93,153 @@ a { text-decoration: none; color: inherit; }
 }
 .game-card.coloring { background: #FFB5D8; }
 .game-card.dots     { background: #B5E0FF; }
+.game-card.counting { background: #FFE9A8; }
 .game-card.locked   { background: #E8E8F0; cursor: not-allowed; }
 .game-card .emoji {
   font-size: clamp(3rem, 14vw, 5rem);
   filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1));
 }
 .game-card .label {
-  font-weight: 700; font-size: 1.1rem; margin-top: 6px; color: #2a2a3e;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 6px;
+  color: #2a2a3e;
 }
 .game-card.locked .label { color: #9999b0; }
 .game-card.locked .emoji { opacity: 0.4; filter: grayscale(0.7); }
 .lock-badge {
-  position: absolute; top: 8px; right: 8px;
-  background: #2a2a3e; color: white; font-size: 0.7rem;
-  padding: 4px 8px; border-radius: 20px; font-weight: 700;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #2a2a3e;
+  color: white;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-weight: 700;
 }
 
 .star-display {
-  display: flex; align-items: center; gap: 8px;
-  background: white; padding: 12px 22px; border-radius: 999px;
-  border: 4px solid #2a2a3e; box-shadow: 0 5px 0 #2a2a3e;
-  font-weight: 700; font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 4px solid #2a2a3e;
+  box-shadow: 0 5px 0 #2a2a3e;
+  font-weight: 700;
+  font-size: 1.3rem;
 }
 .star-display .star { font-size: 1.6rem; animation: spin 4s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
 .floater {
-  position: absolute; font-size: 2.5rem; opacity: 0.6;
-  animation: float 6s ease-in-out infinite; pointer-events: none;
+  position: absolute;
+  font-size: 2.5rem;
+  opacity: 0.6;
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
 }
 @keyframes float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-20px) rotate(15deg); }
 }
 
-/* ---------- TOP BAR ---------- */
+/* ---------- GAME / PICKER SCREENS ---------- */
 #coloring, #game, #picker {
   padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
 }
 .top-bar {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 6px 4px; gap: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 4px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 .icon-btn {
-  width: 52px; height: 52px; border-radius: 50%;
-  border: 4px solid #2a2a3e; background: white;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 4px solid #2a2a3e;
+  background: white;
   font-size: 1.6rem;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; box-shadow: 0 4px 0 #2a2a3e;
-  transition: transform 0.1s, box-shadow 0.1s; flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #2a2a3e;
+  transition: transform 0.1s, box-shadow 0.1s;
+  flex-shrink: 0;
   text-decoration: none;
 }
 .icon-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a2a3e; }
 .mini-stars {
-  background: white; border: 4px solid #2a2a3e; border-radius: 999px;
-  padding: 6px 16px; font-weight: 700; font-size: 1.1rem;
-  display: flex; align-items: center; gap: 6px;
+  background: white;
+  border: 4px solid #2a2a3e;
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   box-shadow: 0 4px 0 #2a2a3e;
 }
 
 /* ---------- COLORING CANVAS ---------- */
 .canvas-wrap {
-  flex: 1; margin: 8px 0;
+  flex: 1;
+  margin: 8px 0;
   background: white;
-  border-radius: 28px; border: 5px solid #2a2a3e;
+  border-radius: 28px;
+  border: 5px solid #2a2a3e;
   box-shadow: 0 6px 0 #2a2a3e;
   position: relative;
   overflow: hidden;
   touch-action: none;
 }
-/* Ghost canvas: the faded emoji "outline" the kid colors over */
 #ghostCanvas {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 1;
 }
-/* Drawing canvas: where finger strokes go, on TOP of the ghost */
 #drawCanvas {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   touch-action: none;
   z-index: 2;
-  /* Multiply blending makes colors look natural overlaid on the emoji,
-     so the emoji still shines through as "outline" */
   mix-blend-mode: multiply;
 }
 
 .palette {
-  display: flex; gap: 10px; overflow-x: auto; overflow-y: hidden;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 10px 6px;
   scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 .palette::-webkit-scrollbar { display: none; }
 .crayon {
-  flex-shrink: 0; width: 58px; height: 58px; border-radius: 50%;
-  border: 4px solid #2a2a3e; cursor: pointer;
-  box-shadow: 0 4px 0 #2a2a3e; transition: transform 0.15s;
-  scroll-snap-align: center; position: relative;
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 4px solid #2a2a3e;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #2a2a3e;
+  transition: transform 0.15s;
+  scroll-snap-align: center;
+  position: relative;
 }
 .crayon:active { transform: scale(0.9); }
 .crayon.active {
@@ -183,22 +248,33 @@ a { text-decoration: none; color: inherit; }
 }
 
 .brush-row {
-  display: flex; align-items: center; justify-content: center;
-  gap: 12px; padding: 4px 6px 8px; flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 4px 6px 8px;
+  flex-wrap: wrap;
 }
 .brush-btn {
-  border: 4px solid #2a2a3e; background: white; border-radius: 999px;
-  padding: 6px 14px; font-family: 'Fredoka', sans-serif;
-  font-weight: 700; font-size: 0.95rem;
-  box-shadow: 0 3px 0 #2a2a3e; cursor: pointer;
-  display: flex; align-items: center; gap: 8px;
+  border: 4px solid #2a2a3e;
+  background: white;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 3px 0 #2a2a3e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .brush-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2a2a3e; }
 .brush-btn.active { background: #FFD93D; }
 .brush-dot { background: currentColor; border-radius: 50%; display: inline-block; }
 
 /* ---------- PICKER SCREEN ---------- */
-.picker-title { text-align: center; padding: 10px 0; }
+.picker-title { text-align: center; padding: 10px 0; flex-shrink: 0; }
 .picker-title h1 {
   font-family: 'Bowlby One', sans-serif;
   font-size: clamp(1.8rem, 7vw, 2.6rem);
@@ -206,8 +282,10 @@ a { text-decoration: none; color: inherit; }
   letter-spacing: -1px;
 }
 .picker-title p {
-  font-weight: 600; color: #6b6b8a;
-  font-size: 1rem; margin-top: 4px;
+  font-weight: 600;
+  color: #6b6b8a;
+  font-size: 1rem;
+  margin-top: 4px;
   animation: leftright 2s ease-in-out infinite;
 }
 @keyframes leftright {
@@ -250,6 +328,23 @@ a { text-decoration: none; color: inherit; }
 .animal-card:active {
   transform: translateY(4px);
   box-shadow: 0 4px 0 #2a2a3e, 0 6px 16px rgba(0,0,0,0.15);
+}
+.animal-card-svg {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.animal-card-svg svg { width: 100%; height: 100%; max-height: 360px; }
+.animal-card-svg svg path,
+.animal-card-svg svg circle,
+.animal-card-svg svg ellipse {
+  fill: none;
+  stroke: #2a2a3e;
+  stroke-width: 7;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
 .animal-card-emoji {
   flex: 1;
@@ -331,73 +426,9 @@ a { text-decoration: none; color: inherit; }
   75% { transform: translateX(6px); }
 }
 
-/* ---------- CELEBRATION ---------- */
-.celebrate {
-  position: fixed; inset: 0; pointer-events: none; display: none;
-  align-items: center; justify-content: center; z-index: 100;
-}
-.celebrate.active { display: flex; }
-.celebrate .msg {
-  font-family: 'Bowlby One', sans-serif;
-  font-size: clamp(3rem, 15vw, 6rem);
-  color: white;
-  -webkit-text-stroke: 4px #2a2a3e;
-  paint-order: stroke fill;
-  animation: pop 1s ease-out;
-  text-align: center;
-}
-@keyframes pop {
-  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
-  50% { transform: scale(1.2) rotate(5deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-.confetti {
-  position: absolute; width: 14px; height: 14px; border-radius: 3px;
-  animation: fall 2s ease-in forwards;
-}
-@keyframes fall {
-  0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-}
-
-/* ---------- MODAL ---------- */
-.modal-bg {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  display: none; align-items: center; justify-content: center;
-  z-index: 200; padding: 20px;
-}
-.modal-bg.active { display: flex; }
-.modal {
-  background: white; border: 5px solid #2a2a3e; border-radius: 28px;
-  padding: 28px 24px; text-align: center;
-  box-shadow: 0 8px 0 #2a2a3e; max-width: 320px; width: 100%;
-}
-.modal h2 {
-  font-family: 'Bowlby One', sans-serif; font-size: 1.6rem;
-  margin-bottom: 16px; color: #2a2a3e;
-}
-.modal-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
-.modal-btn {
-  border: 4px solid #2a2a3e; border-radius: 18px;
-  padding: 12px 20px; font-family: 'Fredoka', sans-serif;
-  font-weight: 700; font-size: 1rem;
-  box-shadow: 0 4px 0 #2a2a3e; cursor: pointer; min-width: 100px;
-}
-.modal-btn.yes { background: #FF4F8B; color: white; }
-.modal-btn.no { background: white; }
-.modal-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a2a3e; }
 /* ============================================================
-   COUNTING GAME styles
-   ADD THESE TO THE BOTTOM OF YOUR style.css
+   COUNTING GAME — IMPORTANT: layout fixes for the wrap
    ============================================================ */
-
-:root {
-  --accent: #FF7AD9;
-}
-
-#game { padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom)); }
-
-/* Count progress badge in top bar */
 .count-badge {
   background: white;
   border: 4px solid #2a2a3e;
@@ -410,10 +441,10 @@ a { text-decoration: none; color: inherit; }
 }
 .count-badge #currentCount { color: var(--accent); }
 
-/* Number display */
 .number-display {
   text-align: center;
   padding: 8px 0;
+  flex-shrink: 0;
 }
 .number-label {
   font-weight: 600;
@@ -423,7 +454,7 @@ a { text-decoration: none; color: inherit; }
 }
 .big-number {
   font-family: 'Bowlby One', sans-serif;
-  font-size: clamp(4rem, 18vw, 7rem);
+  font-size: clamp(3.5rem, 15vw, 6rem);
   line-height: 1;
   color: var(--accent);
   -webkit-text-stroke: 5px #2a2a3e;
@@ -436,9 +467,11 @@ a { text-decoration: none; color: inherit; }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-/* Counting area */
+/* THIS IS THE KEY FIX: counting-wrap needs flex:1 AND explicit width */
 .counting-wrap {
-  flex: 1;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 200px;
   margin: 8px 0;
   background: white;
   border-radius: 28px;
@@ -446,9 +479,9 @@ a { text-decoration: none; color: inherit; }
   box-shadow: 0 6px 0 #2a2a3e;
   position: relative;
   overflow: hidden;
+  display: block; /* not flex - we position children absolutely */
 }
 
-/* The objects to count */
 .count-obj {
   position: absolute;
   cursor: pointer;
@@ -462,35 +495,24 @@ a { text-decoration: none; color: inherit; }
   animation: dropIn 0.5s ease-out backwards;
   filter: drop-shadow(0 4px 0 rgba(0,0,0,0.15));
   line-height: 1;
+  z-index: 1;
 }
 @keyframes dropIn {
   0% { transform: scale(0) rotate(-30deg); opacity: 0; }
   60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
   100% { opacity: 1; }
 }
-.count-obj:active {
-  transform: scale(0.85) !important;
-}
+.count-obj:active { transform: scale(0.85) !important; }
 .count-obj.counted {
   animation: countedBounce 0.5s ease-out;
-  position: absolute;
+  z-index: 2;
 }
 @keyframes countedBounce {
   0% { transform: scale(1); }
   30% { transform: scale(1.4) rotate(10deg); }
   100% { transform: scale(0.9) rotate(0deg); }
 }
-.count-obj.counted::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0.25;
-  z-index: -1;
-}
 
-/* The check-mark numbers that appear on tapped objects */
 .check-mark {
   position: absolute;
   top: -10px;
@@ -498,9 +520,9 @@ a { text-decoration: none; color: inherit; }
   background: var(--accent);
   color: white;
   font-family: 'Bowlby One', sans-serif;
-  font-size: 1.4rem;
-  width: 40px;
-  height: 40px;
+  font-size: 1.2rem;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 4px solid white;
   display: flex;
@@ -515,7 +537,6 @@ a { text-decoration: none; color: inherit; }
   100% { transform: scale(1) rotate(0deg); }
 }
 
-/* Sparkles when tapped */
 .sparkle {
   position: absolute;
   font-size: 1.5rem;
@@ -532,7 +553,6 @@ a { text-decoration: none; color: inherit; }
   }
 }
 
-/* Progress bar */
 .progress-bar {
   height: 22px;
   background: white;
@@ -542,6 +562,7 @@ a { text-decoration: none; color: inherit; }
   overflow: hidden;
   position: relative;
   box-shadow: 0 4px 0 #2a2a3e;
+  flex-shrink: 0;
 }
 .progress-fill {
   height: 100%;
@@ -551,7 +572,6 @@ a { text-decoration: none; color: inherit; }
   border-radius: 999px;
 }
 
-/* Preview cards on picker for counting */
 .count-preview {
   flex: 1;
   display: flex;
@@ -564,15 +584,9 @@ a { text-decoration: none; color: inherit; }
   filter: drop-shadow(0 6px 0 rgba(0,0,0,0.12));
   animation: gentleBob 3s ease-in-out infinite;
 }
-.count-preview-row {
-  display: flex;
-  gap: 10px;
-}
-.count-preview-row span {
-  filter: drop-shadow(0 3px 0 rgba(0,0,0,0.12));
-}
+.count-preview-row { display: flex; gap: 10px; }
+.count-preview-row span { filter: drop-shadow(0 3px 0 rgba(0,0,0,0.12)); }
 
-/* Number-complete overlay (between numbers) */
 .number-complete {
   position: fixed;
   inset: 0;
@@ -637,3 +651,89 @@ a { text-decoration: none; color: inherit; }
   paint-order: stroke fill;
   margin: 12px 0;
 }
+
+/* ---------- CELEBRATION ---------- */
+.celebrate {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.celebrate.active { display: flex; }
+.celebrate .msg {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: clamp(3rem, 15vw, 6rem);
+  color: white;
+  -webkit-text-stroke: 4px #2a2a3e;
+  paint-order: stroke fill;
+  animation: pop 1s ease-out;
+  text-align: center;
+}
+@keyframes pop {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.confetti {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  animation: fall 2s ease-in forwards;
+}
+@keyframes fall {
+  0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ---------- MODAL ---------- */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.modal-bg.active { display: flex; }
+.modal {
+  background: white;
+  border: 5px solid #2a2a3e;
+  border-radius: 28px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 8px 0 #2a2a3e;
+  max-width: 320px;
+  width: 100%;
+}
+.modal h2 {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+  color: #2a2a3e;
+}
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+.modal-btn {
+  border: 4px solid #2a2a3e;
+  border-radius: 18px;
+  padding: 12px 20px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 0 #2a2a3e;
+  cursor: pointer;
+  min-width: 100px;
+}
+.modal-btn.yes { background: #FF4F8B; color: white; }
+.modal-btn.no { background: white; }
+.modal-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a2a3e; }
