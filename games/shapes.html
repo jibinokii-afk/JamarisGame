@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#FFD93D" />
+<title>Jamaris Game — Shapes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<!-- PICKER -->
+<div class="screen active" id="picker">
+  <div class="top-bar">
+    <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
+    <div class="mini-stars">⭐ <span id="pickerStars">0</span></div>
+    <div style="width:52px;"></div>
+  </div>
+
+  <div class="picker-title">
+    <h1>Pick a game!</h1>
+    <p>← swipe →</p>
+  </div>
+
+  <div class="animal-carousel" id="modeCarousel">
+    <!-- Cards inserted by JS -->
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="game">
+  <div class="top-bar">
+    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
+    <div class="progress-dots" id="progressDots"></div>
+    <button class="icon-btn" id="resetBtn" aria-label="Restart">🔄</button>
+  </div>
+
+  <div class="shape-hint" id="shapeHint">Drop the <span id="hintShape">shape</span> in the hole!</div>
+
+  <div class="shapes-stage" id="shapesStage">
+    <div class="shape-spawn" id="shapeSpawn">
+      <!-- Active shape inserted by JS -->
+    </div>
+    <div class="shape-holes" id="shapeHoles">
+      <!-- Holes inserted by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Celebration -->
+<div class="celebrate" id="celebrate">
+  <div class="msg" id="celebrateMsg">YAY!</div>
+</div>
+
+<!-- Level complete overlay -->
+<div class="number-complete" id="levelComplete">
+  <div class="number-complete-inner">
+    <div class="trophy">🏆</div>
+    <div class="trophy-msg" style="font-family:'Bowlby One',sans-serif;font-size:1.6rem;color:#2a2a3e;margin:10px 0;">ALL DONE!</div>
+    <div class="next-msg">Tap for more shapes!</div>
+  </div>
+</div>
+
+<script src="../js/shapes.js"></script>
+</body>
+</html>
