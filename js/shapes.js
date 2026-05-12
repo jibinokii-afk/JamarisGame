@@ -1,13 +1,10 @@
 /* ============================================================
-   JAMARIS GAME — Shapes (drag-and-drop sorter)
+   JAMARIS GAME — Shapes (drag-and-drop sorter) FIXED
+   Skips picker - goes straight into the game
    ============================================================ */
 
 let stars = parseInt(localStorage.getItem('jamaris_stars') || '0', 10);
 function saveStars() { localStorage.setItem('jamaris_stars', String(stars)); }
-function updateStars() {
-  const p = document.getElementById('pickerStars');
-  if (p) p.textContent = stars;
-}
 
 /* ---------- AUDIO ---------- */
 let audioCtx;
@@ -33,7 +30,6 @@ function playTone(freq, duration = 0.12, type = 'sine', vol = 0.15) {
 function playClick() { playTone(800, 0.08, 'triangle'); }
 function playPickup() { playTone(500, 0.08, 'sine', 0.1); }
 function playSnap() {
-  // Satisfying "click in" sound
   playTone(880, 0.06, 'sine', 0.15);
   setTimeout(() => playTone(1320, 0.12, 'triangle', 0.15), 60);
 }
@@ -45,8 +41,7 @@ function playYay() {
 }
 
 /* ============================================================
-   SHAPE SVGs — Modern chunky designs
-   All centered on viewBox 100x100
+   SHAPES
    ============================================================ */
 const SHAPE_SVG = {
   circle:    `<circle cx="50" cy="50" r="42" />`,
@@ -68,76 +63,22 @@ const SHAPE_NAMES = {
 const COLORS = ['#FF3B6C', '#FFA62B', '#FFD93D', '#6BCB77', '#56CCF2', '#9B5DE5', '#FF7AD9'];
 
 /* ============================================================
-   GAME MODES (only one for now, more can be added later)
-   ============================================================ */
-const MODES = [
-  {
-    id: 'sorter',
-    name: 'Shape Sorter',
-    emoji: '🔵',
-    color: '#FFE9A8',
-    description: 'Drop shapes in matching holes!'
-  }
-  // Future: { id: 'colorsort', name: 'Color Match', emoji: '🌈', color: '#FFD0E0' }
-  // Future: { id: 'find', name: 'Find the Shape', emoji: '🔍', color: '#C8E8E8' }
-];
-
-/* ============================================================
-   BUILD PICKER
-   ============================================================ */
-const carousel = document.getElementById('modeCarousel');
-MODES.forEach((mode, idx) => {
-  const card = document.createElement('div');
-  card.className = 'animal-card';
-  card.style.background = mode.color;
-  card.innerHTML = `
-    <div class="count-preview">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:3.5rem;">
-        <div>🔵</div><div>🟧</div>
-        <div>🔺</div><div>⭐</div>
-      </div>
-    </div>
-    <div class="animal-card-name">${mode.emoji} ${mode.name}</div>
-  `;
-  card.addEventListener('click', () => startGame(idx));
-  carousel.appendChild(card);
-});
-
-/* ============================================================
    GAME STATE
    ============================================================ */
-const ROUND_LENGTH = 5; // Shapes per round
-const HOLE_COUNT = 3;   // Holes shown each round
+const ROUND_LENGTH = 5;
+const HOLE_COUNT = 3;
 
-let currentRound = 0;   // 0..ROUND_LENGTH
-let currentTarget = null; // shape name like 'circle'
-let currentHoles = [];   // array of shape names
+let currentRound = 0;
+let currentTarget = null;
+let currentHoles = [];
 let activeShapeEl = null;
 let isDragging = false;
 let dragOffset = { x: 0, y: 0 };
 let spawnHomeX = 0, spawnHomeY = 0;
 
-function startGame(modeIdx) {
-  playClick();
-  currentRound = 0;
-  document.getElementById('picker').classList.remove('active');
-  document.getElementById('game').classList.add('active');
-  // Wait for screen to render
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      nextRound();
-    });
-  });
-}
-
-function backToPicker() {
-  playClick();
-  document.getElementById('game').classList.remove('active');
-  document.getElementById('picker').classList.add('active');
-}
-
 function updateProgressDots() {
   const dotsEl = document.getElementById('progressDots');
+  if (!dotsEl) return;
   dotsEl.innerHTML = '';
   for (let i = 0; i < ROUND_LENGTH; i++) {
     const dot = document.createElement('div');
@@ -153,14 +94,13 @@ function nextRound() {
   }
   updateProgressDots();
 
-  // Pick HOLE_COUNT random shapes for this round
   const allShapes = Object.keys(SHAPE_SVG);
   const shuffled = [...allShapes].sort(() => Math.random() - 0.5);
   currentHoles = shuffled.slice(0, HOLE_COUNT);
-  // Pick the target from the holes
   currentTarget = currentHoles[Math.floor(Math.random() * currentHoles.length)];
 
-  document.getElementById('hintShape').textContent = SHAPE_NAMES[currentTarget];
+  const hintShape = document.getElementById('hintShape');
+  if (hintShape) hintShape.textContent = SHAPE_NAMES[currentTarget];
 
   renderHoles();
   spawnShape();
@@ -168,44 +108,34 @@ function nextRound() {
 
 function renderHoles() {
   const holesEl = document.getElementById('shapeHoles');
+  if (!holesEl) return;
   holesEl.innerHTML = '';
-  currentHoles.forEach((shapeName, idx) => {
+  currentHoles.forEach((shapeName) => {
     const hole = document.createElement('div');
     hole.className = 'shape-hole';
     hole.dataset.shape = shapeName;
-    // The hole is the shape outline, but darker/recessed-looking
-    hole.innerHTML = `
-      <svg viewBox="0 0 100 100" class="hole-svg">
-        ${SHAPE_SVG[shapeName]}
-      </svg>
-    `;
+    hole.innerHTML = `<svg viewBox="0 0 100 100" class="hole-svg">${SHAPE_SVG[shapeName]}</svg>`;
     holesEl.appendChild(hole);
   });
 }
 
 function spawnShape() {
   const spawn = document.getElementById('shapeSpawn');
+  if (!spawn) return;
   spawn.innerHTML = '';
 
   const shapeEl = document.createElement('div');
   shapeEl.className = 'drag-shape';
   const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-  shapeEl.style.color = color;
   shapeEl.dataset.shape = currentTarget;
-  shapeEl.innerHTML = `
-    <svg viewBox="0 0 100 100" class="drag-svg" style="fill:${color};">
-      ${SHAPE_SVG[currentTarget]}
-    </svg>
-  `;
+  shapeEl.innerHTML = `<svg viewBox="0 0 100 100" class="drag-svg" style="fill:${color};">${SHAPE_SVG[currentTarget]}</svg>`;
   spawn.appendChild(shapeEl);
   activeShapeEl = shapeEl;
 
-  // Remember home position (center of spawn area)
   const spawnRect = spawn.getBoundingClientRect();
-  spawnHomeX = spawnRect.width / 2;
-  spawnHomeY = spawnRect.height / 2;
+  spawnHomeX = spawnRect.width / 2 || 150;
+  spawnHomeY = spawnRect.height / 2 || 150;
 
-  // Attach drag events
   shapeEl.addEventListener('mousedown', startDrag);
   shapeEl.addEventListener('touchstart', startDrag, { passive: false });
 }
@@ -242,9 +172,9 @@ function doDrag(e) {
   e.preventDefault();
   const pos = getEventPos(e);
   const stage = document.getElementById('shapesStage');
+  if (!stage) return;
   const stageRect = stage.getBoundingClientRect();
 
-  // Position relative to stage
   const x = pos.x - dragOffset.x - stageRect.left;
   const y = pos.y - dragOffset.y - stageRect.top;
 
@@ -252,7 +182,6 @@ function doDrag(e) {
   activeShapeEl.style.top = y + 'px';
   activeShapeEl.style.transform = 'translate(-50%, -50%) scale(1.1)';
 
-  // Highlight matching hole when hovering near it
   const holes = document.querySelectorAll('.shape-hole');
   holes.forEach(h => {
     const hRect = h.getBoundingClientRect();
@@ -280,12 +209,10 @@ function endDrag(e) {
   document.removeEventListener('touchend', endDrag);
   document.removeEventListener('touchcancel', endDrag);
 
-  // Get final position
   const shapeRect = activeShapeEl.getBoundingClientRect();
   const shapeCx = shapeRect.left + shapeRect.width / 2;
   const shapeCy = shapeRect.top + shapeRect.height / 2;
 
-  // Check overlap with any hole
   const holes = document.querySelectorAll('.shape-hole');
   let droppedOnCorrect = false;
   let droppedOnWrong = false;
@@ -328,25 +255,18 @@ function snapIntoHole(hole) {
   const targetX = hRect.left - stageRect.left + hRect.width / 2;
   const targetY = hRect.top - stageRect.top + hRect.height / 2;
 
-  // Animate to hole
   activeShapeEl.style.transition = 'left 0.3s ease-out, top 0.3s ease-out, transform 0.3s ease-out';
   activeShapeEl.style.left = targetX + 'px';
   activeShapeEl.style.top = targetY + 'px';
   activeShapeEl.style.transform = 'translate(-50%, -50%) scale(0.85)';
 
-  // Flash hole
   hole.classList.add('filled');
-  setTimeout(() => {
-    // Mini sparkles
-    spawnMiniSparkles(hole);
-  }, 200);
+  setTimeout(() => spawnMiniSparkles(hole), 200);
 
-  // Disable further interactions
   isDragging = false;
 
   setTimeout(() => {
     currentRound++;
-    updateStars();  // Save a star per shape? No, just per round
     nextRound();
   }, 800);
 }
@@ -361,9 +281,7 @@ function bounceBack(playWrongSound) {
   activeShapeEl.style.transform = 'translate(-50%, -50%) scale(1)';
 
   setTimeout(() => {
-    if (activeShapeEl) {
-      activeShapeEl.style.transition = '';
-    }
+    if (activeShapeEl) activeShapeEl.style.transition = '';
   }, 400);
 }
 
@@ -392,10 +310,15 @@ function spawnMiniSparkles(hole) {
 function levelComplete() {
   stars++;
   saveStars();
-  updateStars();
   playYay();
 
   const overlay = document.getElementById('levelComplete');
+  if (!overlay) {
+    // Fallback - just restart
+    currentRound = 0;
+    setTimeout(nextRound, 1500);
+    return;
+  }
   overlay.classList.add('active');
   spawnConfetti();
 
@@ -415,6 +338,7 @@ function levelComplete() {
 function spawnConfetti() {
   const colors = ['#FF3B6C', '#FFD93D', '#56CCF2', '#A8E063', '#9B5DE5', '#FF7AD9'];
   const container = document.getElementById('celebrate');
+  if (!container) return;
   container.classList.add('active');
   for (let i = 0; i < 40; i++) {
     const conf = document.createElement('div');
@@ -430,11 +354,16 @@ function spawnConfetti() {
 }
 
 /* ---------- WIRE UP ---------- */
-document.getElementById('backBtn').addEventListener('click', backToPicker);
 document.getElementById('resetBtn').addEventListener('click', () => {
   playClick();
   currentRound = 0;
   nextRound();
 });
 
-updateStars();
+/* ---------- START IMMEDIATELY ---------- */
+// Wait a couple of frames for the screen to fully render with proper dimensions
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    nextRound();
+  });
+});
