@@ -14,28 +14,10 @@
 </head>
 <body>
 
-<!-- PICKER -->
-<div class="screen active" id="picker">
+<!-- GAME (no picker, go straight in) -->
+<div class="screen active" id="game">
   <div class="top-bar">
     <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
-    <div class="mini-stars">⭐ <span id="pickerStars">0</span></div>
-    <div style="width:52px;"></div>
-  </div>
-
-  <div class="picker-title">
-    <h1>Pick a game!</h1>
-    <p>← swipe →</p>
-  </div>
-
-  <div class="animal-carousel" id="modeCarousel">
-    <!-- Cards inserted by JS -->
-  </div>
-</div>
-
-<!-- GAME -->
-<div class="screen" id="game">
-  <div class="top-bar">
-    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
     <div class="progress-dots" id="progressDots"></div>
     <button class="icon-btn" id="resetBtn" aria-label="Restart">🔄</button>
   </div>
