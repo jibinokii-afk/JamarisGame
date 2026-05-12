@@ -737,3 +737,181 @@ a { text-decoration: none; color: inherit; }
 .modal-btn.yes { background: #FF4F8B; color: white; }
 .modal-btn.no { background: white; }
 .modal-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a2a3e; }
+/* ============================================================
+   SHAPES GAME styles - ADD THESE TO THE END OF style.css
+   ============================================================ */
+
+/* Progress dots in top bar */
+.progress-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+.progress-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 3px solid #2a2a3e;
+  background: white;
+  box-shadow: 0 2px 0 #2a2a3e;
+  transition: all 0.3s;
+}
+.progress-dot.done {
+  background: #6BCB77;
+}
+.progress-dot.current {
+  background: #FFD93D;
+  transform: scale(1.3);
+  animation: dotPulse 1s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { box-shadow: 0 2px 0 #2a2a3e, 0 0 0 0 rgba(255, 217, 61, 0.6); }
+  50% { box-shadow: 0 2px 0 #2a2a3e, 0 0 0 8px rgba(255, 217, 61, 0); }
+}
+
+/* Hint message */
+.shape-hint {
+  background: white;
+  border: 4px solid #2a2a3e;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 6px auto;
+  box-shadow: 0 4px 0 #2a2a3e;
+  text-align: center;
+  align-self: center;
+  flex-shrink: 0;
+}
+.shape-hint span {
+  color: var(--accent, #FF4F8B);
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 1.2rem;
+}
+
+/* Stage area where everything happens */
+.shapes-stage {
+  flex: 1;
+  position: relative;
+  margin: 8px;
+  background: white;
+  border-radius: 28px;
+  border: 5px solid #2a2a3e;
+  box-shadow: 0 6px 0 #2a2a3e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+
+/* Top area where the draggable shape spawns */
+.shape-spawn {
+  flex: 1;
+  position: relative;
+  min-height: 150px;
+}
+
+/* Bottom area with the holes */
+.shape-holes {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 16px 12px;
+  gap: 12px;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.04));
+  border-top: 4px dashed rgba(42, 42, 62, 0.15);
+  flex-shrink: 0;
+}
+
+/* The holes (target drop zones) */
+.shape-hole {
+  width: 28vw;
+  max-width: 100px;
+  height: 28vw;
+  max-height: 100px;
+  position: relative;
+  transition: transform 0.2s;
+}
+.shape-hole .hole-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Holes look "recessed" - dark fill, no stroke */
+.shape-hole .hole-svg path,
+.shape-hole .hole-svg circle,
+.shape-hole .hole-svg rect {
+  fill: rgba(42, 42, 62, 0.15);
+  stroke: rgba(42, 42, 62, 0.4);
+  stroke-width: 3;
+  stroke-dasharray: 6 4;
+}
+/* When the player drags the right shape near, glow up */
+.shape-hole.glow {
+  transform: scale(1.15);
+}
+.shape-hole.glow .hole-svg path,
+.shape-hole.glow .hole-svg circle,
+.shape-hole.glow .hole-svg rect {
+  fill: rgba(255, 217, 61, 0.4);
+  stroke: #FFD93D;
+  stroke-width: 4;
+  stroke-dasharray: none;
+  animation: holeGlow 0.5s ease-in-out infinite alternate;
+}
+@keyframes holeGlow {
+  from { filter: drop-shadow(0 0 4px #FFD93D); }
+  to   { filter: drop-shadow(0 0 16px #FFD93D); }
+}
+/* Filled holes (after dropping correctly) */
+.shape-hole.filled .hole-svg path,
+.shape-hole.filled .hole-svg circle,
+.shape-hole.filled .hole-svg rect {
+  fill: rgba(107, 203, 119, 0.3);
+  stroke: #6BCB77;
+  stroke-dasharray: none;
+}
+
+/* The draggable shape itself */
+.drag-shape {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 38vw;
+  max-width: 140px;
+  height: 38vw;
+  max-height: 140px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2));
+  animation: idleWobble 2s ease-in-out infinite;
+  z-index: 5;
+}
+.drag-shape.dragging {
+  cursor: grabbing;
+  animation: none;
+  z-index: 20;
+  filter: drop-shadow(0 12px 12px rgba(0,0,0,0.3));
+}
+@keyframes idleWobble {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-3deg); }
+  50% { transform: translate(-50%, -50%) rotate(3deg); }
+}
+
+.drag-shape .drag-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.drag-shape .drag-svg path,
+.drag-shape .drag-svg circle,
+.drag-shape .drag-svg rect {
+  stroke: #2a2a3e;
+  stroke-width: 5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
