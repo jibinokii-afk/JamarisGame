@@ -386,3 +386,254 @@ a { text-decoration: none; color: inherit; }
 .modal-btn.yes { background: #FF4F8B; color: white; }
 .modal-btn.no { background: white; }
 .modal-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a2a3e; }
+/* ============================================================
+   COUNTING GAME styles
+   ADD THESE TO THE BOTTOM OF YOUR style.css
+   ============================================================ */
+
+:root {
+  --accent: #FF7AD9;
+}
+
+#game { padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom)); }
+
+/* Count progress badge in top bar */
+.count-badge {
+  background: white;
+  border: 4px solid #2a2a3e;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 1.3rem;
+  color: #2a2a3e;
+  box-shadow: 0 4px 0 #2a2a3e;
+}
+.count-badge #currentCount { color: var(--accent); }
+
+/* Number display */
+.number-display {
+  text-align: center;
+  padding: 8px 0;
+}
+.number-label {
+  font-weight: 600;
+  color: #6b6b8a;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+.big-number {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: clamp(4rem, 18vw, 7rem);
+  line-height: 1;
+  color: var(--accent);
+  -webkit-text-stroke: 5px #2a2a3e;
+  paint-order: stroke fill;
+  display: inline-block;
+}
+@keyframes numberPop {
+  0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Counting area */
+.counting-wrap {
+  flex: 1;
+  margin: 8px 0;
+  background: white;
+  border-radius: 28px;
+  border: 5px solid #2a2a3e;
+  box-shadow: 0 6px 0 #2a2a3e;
+  position: relative;
+  overflow: hidden;
+}
+
+/* The objects to count */
+.count-obj {
+  position: absolute;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: transform 0.15s ease-out;
+  animation: dropIn 0.5s ease-out backwards;
+  filter: drop-shadow(0 4px 0 rgba(0,0,0,0.15));
+  line-height: 1;
+}
+@keyframes dropIn {
+  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  100% { opacity: 1; }
+}
+.count-obj:active {
+  transform: scale(0.85) !important;
+}
+.count-obj.counted {
+  animation: countedBounce 0.5s ease-out;
+  position: absolute;
+}
+@keyframes countedBounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4) rotate(10deg); }
+  100% { transform: scale(0.9) rotate(0deg); }
+}
+.count-obj.counted::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.25;
+  z-index: -1;
+}
+
+/* The check-mark numbers that appear on tapped objects */
+.check-mark {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--accent);
+  color: white;
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 1.4rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 4px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 0 #2a2a3e;
+  animation: checkPop 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  z-index: 5;
+}
+@keyframes checkPop {
+  0% { transform: scale(0) rotate(-180deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Sparkles when tapped */
+.sparkle {
+  position: absolute;
+  font-size: 1.5rem;
+  pointer-events: none;
+  animation: sparkleFly 0.8s ease-out forwards;
+  z-index: 10;
+}
+@keyframes sparkleFly {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  50% { opacity: 1; }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+/* Progress bar */
+.progress-bar {
+  height: 22px;
+  background: white;
+  border: 4px solid #2a2a3e;
+  border-radius: 999px;
+  margin: 4px 4px 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 0 #2a2a3e;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #FFD93D);
+  width: 0%;
+  transition: width 0.4s ease-out;
+  border-radius: 999px;
+}
+
+/* Preview cards on picker for counting */
+.count-preview {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.count-preview-emoji {
+  filter: drop-shadow(0 6px 0 rgba(0,0,0,0.12));
+  animation: gentleBob 3s ease-in-out infinite;
+}
+.count-preview-row {
+  display: flex;
+  gap: 10px;
+}
+.count-preview-row span {
+  filter: drop-shadow(0 3px 0 rgba(0,0,0,0.12));
+}
+
+/* Number-complete overlay (between numbers) */
+.number-complete {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 150;
+  cursor: pointer;
+}
+.number-complete.active {
+  display: flex;
+  animation: fadeIn 0.3s ease-out;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.number-complete-inner {
+  background: white;
+  border: 6px solid #2a2a3e;
+  border-radius: 32px;
+  padding: 30px 40px;
+  text-align: center;
+  box-shadow: 0 10px 0 #2a2a3e;
+  animation: pop 0.5s ease-out;
+  max-width: 90vw;
+}
+.trophy {
+  font-size: 4rem;
+  animation: trophyBounce 1s ease-in-out infinite;
+}
+@keyframes trophyBounce {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+.big-number-done {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 5rem;
+  color: var(--accent);
+  -webkit-text-stroke: 4px #2a2a3e;
+  paint-order: stroke fill;
+  margin: 10px 0;
+}
+.next-msg {
+  font-weight: 700;
+  color: #6b6b8a;
+  font-size: 1.1rem;
+  margin-top: 8px;
+  animation: pulse-msg 1.5s ease-in-out infinite;
+}
+@keyframes pulse-msg {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.trophy-mode .trophy-big {
+  font-size: 6rem;
+  animation: trophyBounce 1s ease-in-out infinite;
+}
+.trophy-mode .trophy-msg {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: 1.8rem;
+  color: var(--accent);
+  -webkit-text-stroke: 3px #2a2a3e;
+  paint-order: stroke fill;
+  margin: 12px 0;
+}
