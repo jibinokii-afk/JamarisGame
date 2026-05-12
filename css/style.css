@@ -1,5 +1,5 @@
 /* ============================================================
-   JAMARIS GAME — shared styles
+   JAMARIS GAME — shared styles v3 (emoji-based outlines)
    ============================================================ */
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body {
@@ -110,7 +110,7 @@ a { text-decoration: none; color: inherit; }
   50% { transform: translateY(-20px) rotate(15deg); }
 }
 
-/* ---------- COLORING SCREEN ---------- */
+/* ---------- TOP BAR ---------- */
 #coloring, #game, #picker {
   padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
 }
@@ -135,21 +135,32 @@ a { text-decoration: none; color: inherit; }
   box-shadow: 0 4px 0 #2a2a3e;
 }
 
+/* ---------- COLORING CANVAS ---------- */
 .canvas-wrap {
   flex: 1; margin: 8px 0;
-  background: white; border-radius: 28px; border: 5px solid #2a2a3e;
+  background: white;
+  border-radius: 28px; border: 5px solid #2a2a3e;
   box-shadow: 0 6px 0 #2a2a3e;
-  position: relative; overflow: hidden; touch-action: none;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
 }
+/* Ghost canvas: the faded emoji "outline" the kid colors over */
+#ghostCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Drawing canvas: where finger strokes go, on TOP of the ghost */
 #drawCanvas {
-  position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none;
-}
-#outlineSvg {
-  position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
-}
-#outlineSvg path, #outlineSvg circle, #outlineSvg ellipse {
-  fill: none; stroke: #2a2a3e; stroke-width: 6;
-  stroke-linejoin: round; stroke-linecap: round;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  touch-action: none;
+  z-index: 2;
+  /* Multiply blending makes colors look natural overlaid on the emoji,
+     so the emoji still shines through as "outline" */
+  mix-blend-mode: multiply;
 }
 
 .palette {
@@ -186,10 +197,8 @@ a { text-decoration: none; color: inherit; }
 .brush-btn.active { background: #FFD93D; }
 .brush-dot { background: currentColor; border-radius: 50%; display: inline-block; }
 
-/* ---------- PICKER SCREEN (animals/puzzles carousel) ---------- */
-.picker-title {
-  text-align: center; padding: 10px 0;
-}
+/* ---------- PICKER SCREEN ---------- */
+.picker-title { text-align: center; padding: 10px 0; }
 .picker-title h1 {
   font-family: 'Bowlby One', sans-serif;
   font-size: clamp(1.8rem, 7vw, 2.6rem);
@@ -242,26 +251,18 @@ a { text-decoration: none; color: inherit; }
   transform: translateY(4px);
   box-shadow: 0 4px 0 #2a2a3e, 0 6px 16px rgba(0,0,0,0.15);
 }
-.animal-card-svg {
+.animal-card-emoji {
   flex: 1;
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: clamp(8rem, 28vw, 14rem);
+  filter: drop-shadow(0 6px 0 rgba(0,0,0,0.12));
+  animation: gentleBob 3s ease-in-out infinite;
 }
-.animal-card-svg svg {
-  width: 100%;
-  height: 100%;
-  max-height: 360px;
-}
-.animal-card-svg svg path,
-.animal-card-svg svg circle,
-.animal-card-svg svg ellipse {
-  fill: none;
-  stroke: #2a2a3e;
-  stroke-width: 6;
-  stroke-linejoin: round;
-  stroke-linecap: round;
+@keyframes gentleBob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-10px) rotate(3deg); }
 }
 .animal-card-name {
   background: white;
@@ -309,11 +310,7 @@ a { text-decoration: none; color: inherit; }
   justify-content: center;
   padding: 12px;
 }
-#dotsSvg {
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-}
+#dotsSvg { width: 100%; height: 100%; touch-action: none; }
 .pulsing-dot circle:first-child {
   animation: pulse 1.2s ease-in-out infinite;
   transform-origin: center;
