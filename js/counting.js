@@ -1,5 +1,5 @@
 /* ============================================================
-   JAMARIS GAME — Counting (1 to 10)
+   JAMARIS GAME — Counting (1 to 10) - FIXED layout
    ============================================================ */
 
 let stars = parseInt(localStorage.getItem('jamaris_stars') || '0', 10);
@@ -32,10 +32,8 @@ function playTone(freq, duration = 0.12, type = 'sine', vol = 0.15) {
 }
 function playClick() { playTone(800, 0.08, 'triangle'); }
 function playCount(num) {
-  // Each count plays one note up the C major scale (cheerful, ascending)
-  const scale = [262, 294, 330, 349, 392, 440, 494, 523, 587, 659]; // C4 to E5
+  const scale = [262, 294, 330, 349, 392, 440, 494, 523, 587, 659];
   playTone(scale[Math.min(num - 1, scale.length - 1)], 0.22, 'triangle', 0.18);
-  // Add a little sparkle harmonic
   setTimeout(() => playTone(scale[Math.min(num - 1, scale.length - 1)] * 2, 0.1, 'sine', 0.08), 50);
 }
 function playYay() {
@@ -44,14 +42,13 @@ function playYay() {
   );
 }
 function playTrophy() {
-  // Fanfare
   [523, 659, 784, 659, 784, 1047, 1318].forEach((f, i) =>
     setTimeout(() => playTone(f, 0.18, 'triangle', 0.2), i * 130)
   );
 }
 
 /* ============================================================
-   COUNTING SETS — Each set has an emoji + a fun background color
+   COUNTING SETS
    ============================================================ */
 const COUNT_SETS = [
   { name: 'Apples',       emoji: '🍎', color: '#FFD0D0', accent: '#FF3B6C' },
@@ -74,7 +71,6 @@ COUNT_SETS.forEach((set, idx) => {
   const card = document.createElement('div');
   card.className = 'animal-card';
   card.style.background = set.color;
-  // Show 3 of the emoji as a preview
   card.innerHTML = `
     <div class="count-preview">
       <div class="count-preview-emoji" style="font-size:5rem;">${set.emoji}</div>
@@ -94,9 +90,8 @@ COUNT_SETS.forEach((set, idx) => {
    GAME STATE
    ============================================================ */
 let currentSet = 0;
-let targetNumber = 1;     // current number we're counting TO (1-10)
-let tappedCount = 0;      // how many of the visible objects have been tapped
-let objects = [];         // array of object elements
+let targetNumber = 1;
+let tappedCount = 0;
 
 function startGame(idx) {
   playClick();
@@ -104,10 +99,12 @@ function startGame(idx) {
   targetNumber = 1;
   document.getElementById('picker').classList.remove('active');
   document.getElementById('game').classList.add('active');
-  // Color the game screen with this set's accent
   const set = COUNT_SETS[currentSet];
   document.documentElement.style.setProperty('--accent', set.accent);
-  loadNumber(targetNumber);
+  // Wait for the screen to actually render and have dimensions
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => loadNumber(targetNumber));
+  });
 }
 
 function backToPicker() {
@@ -126,7 +123,6 @@ function loadNumber(num) {
   document.getElementById('targetCount').textContent = num;
   document.getElementById('progressFill').style.width = '0%';
 
-  // Animate the big number
   const big = document.getElementById('bigNumber');
   big.style.animation = 'none';
   void big.offsetWidth;
@@ -138,45 +134,56 @@ function loadNumber(num) {
 function spawnObjects(count, emoji) {
   const wrap = document.getElementById('countingWrap');
   wrap.innerHTML = '';
-  objects = [];
 
-  const rect = wrap.getBoundingClientRect();
-  // Use measured dimensions or sensible defaults
-  const W = rect.width || 300;
-  const H = rect.height || 400;
+  // Get the wrap's actual size; fallback to window if 0
+  let rect = wrap.getBoundingClientRect();
+  let W = rect.width;
+  let H = rect.height;
 
-  // Object size scales down with more objects so they all fit
-  const baseSize = Math.min(W, H) * 0.22;
-  const size = Math.max(40, baseSize - count * 2.5);
+  // FALLBACK: if container has no dimensions, use viewport-based defaults
+  if (W < 50 || H < 50) {
+    W = Math.max(window.innerWidth - 24, 280);
+    H = Math.max(window.innerHeight * 0.5, 400);
+  }
 
-  // Generate non-overlapping random positions (with retries)
+  // Object size scales with available space AND object count
+  // Smaller objects when there are many
+  const baseSize = Math.min(W * 0.22, H * 0.22, 110);
+  const size = Math.max(38, baseSize - count * 3);
+
   const positions = [];
-  const minDist = size * 1.05;
-  const padding = size * 0.6;
+  const minDist = size * 1.08;
+  const padding = size * 0.55;
+
+  // Make sure padding doesn't exceed half the available space
+  const safePadding = Math.min(padding, W * 0.3, H * 0.3);
 
   for (let i = 0; i < count; i++) {
     let placed = false;
-    for (let attempt = 0; attempt < 80 && !placed; attempt++) {
-      const x = padding + Math.random() * (W - padding * 2);
-      const y = padding + Math.random() * (H - padding * 2);
+    for (let attempt = 0; attempt < 100 && !placed; attempt++) {
+      const x = safePadding + Math.random() * Math.max(W - safePadding * 2, size);
+      const y = safePadding + Math.random() * Math.max(H - safePadding * 2, size);
       let collides = false;
       for (const p of positions) {
         const dx = p.x - x, dy = p.y - y;
-        if (Math.sqrt(dx*dx + dy*dy) < minDist) { collides = true; break; }
+        if (Math.sqrt(dx * dx + dy * dy) < minDist) { collides = true; break; }
       }
       if (!collides) {
         positions.push({ x, y });
         placed = true;
       }
     }
-    // Fallback to a soft grid if random placement fails
     if (!placed) {
+      // Grid fallback - guaranteed non-overlapping
       const cols = Math.ceil(Math.sqrt(count));
+      const rows = Math.ceil(count / cols);
       const col = i % cols;
       const row = Math.floor(i / cols);
+      const cellW = Math.max((W - safePadding * 2) / cols, size);
+      const cellH = Math.max((H - safePadding * 2) / rows, size);
       positions.push({
-        x: padding + (col + 0.5) * ((W - padding * 2) / cols),
-        y: padding + (row + 0.5) * ((H - padding * 2) / Math.ceil(count / cols))
+        x: safePadding + (col + 0.5) * cellW,
+        y: safePadding + (row + 0.5) * cellH
       });
     }
   }
@@ -185,9 +192,14 @@ function spawnObjects(count, emoji) {
     const obj = document.createElement('div');
     obj.className = 'count-obj';
     obj.textContent = emoji;
+    obj.style.position = 'absolute';
     obj.style.left = (pos.x - size / 2) + 'px';
     obj.style.top = (pos.y - size / 2) + 'px';
+    obj.style.width = size + 'px';
+    obj.style.height = size + 'px';
     obj.style.fontSize = size + 'px';
+    obj.style.lineHeight = size + 'px';
+    obj.style.textAlign = 'center';
     obj.style.transform = `rotate(${(Math.random() - 0.5) * 20}deg)`;
     obj.style.animationDelay = (i * 0.05) + 's';
     obj.dataset.index = i;
@@ -197,7 +209,6 @@ function spawnObjects(count, emoji) {
       tapObject(obj);
     }, { passive: false });
     wrap.appendChild(obj);
-    objects.push(obj);
   });
 }
 
@@ -208,18 +219,15 @@ function tapObject(el) {
 
   playCount(tappedCount);
 
-  // Spawn check mark
   const check = document.createElement('div');
   check.className = 'check-mark';
   check.textContent = tappedCount;
   el.appendChild(check);
 
-  // Update progress display
   document.getElementById('currentCount').textContent = tappedCount;
   const pct = (tappedCount / targetNumber) * 100;
   document.getElementById('progressFill').style.width = pct + '%';
 
-  // Mini sparkles
   spawnSparkles(el);
 
   if (tappedCount >= targetNumber) {
@@ -254,7 +262,6 @@ function numberComplete() {
   updateStars();
 
   if (targetNumber >= 10) {
-    // Done with all 10!
     showTrophy();
   } else {
     showNumberDone();
@@ -267,7 +274,6 @@ function showNumberDone() {
   playYay();
   spawnConfetti();
 
-  // Tap anywhere to advance
   const handler = () => {
     document.getElementById('numberComplete').classList.remove('active');
     document.getElementById('numberComplete').removeEventListener('click', handler);
@@ -275,7 +281,6 @@ function showNumberDone() {
   };
   document.getElementById('numberComplete').addEventListener('click', handler);
 
-  // Auto-advance after 2.5s if no tap
   setTimeout(() => {
     if (document.getElementById('numberComplete').classList.contains('active')) {
       handler();
@@ -300,7 +305,6 @@ function showTrophy() {
   const handler = () => {
     overlay.classList.remove('active');
     overlay.removeEventListener('click', handler);
-    // Reset the overlay HTML for next time
     overlay.innerHTML = `
       <div class="number-complete-inner">
         <div class="trophy">🏆</div>
@@ -339,11 +343,10 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 window.addEventListener('resize', () => {
   if (document.getElementById('game').classList.contains('active')) {
-    spawnObjects(targetNumber, COUNT_SETS[currentSet].emoji);
-    // Reset tapped state since we're respawning
     tappedCount = 0;
     document.getElementById('currentCount').textContent = 0;
     document.getElementById('progressFill').style.width = '0%';
+    spawnObjects(targetNumber, COUNT_SETS[currentSet].emoji);
   }
 });
 
