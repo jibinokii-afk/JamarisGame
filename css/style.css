@@ -915,3 +915,338 @@ a { text-decoration: none; color: inherit; }
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
+
+/* ============================================================
+   ADDITIONAL HOME CARD COLORS — append to style.css
+   (some may already be there, harmless if duplicate)
+   ============================================================ */
+.game-card.shapes   { background: #C8E6FF; }
+.game-card.train    { background: #FFD9B0; }
+
+/* Make game grid look great with 5-6 cards by allowing wrap */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px; /* slightly tighter for more cards */
+  width: 100%;
+  max-width: 480px;
+  padding: 10px 4px;
+}
+
+/* When 6 cards, make them a bit smaller so they fit on iPhone */
+@media (max-height: 800px) {
+  .game-card .emoji {
+    font-size: clamp(2.5rem, 11vw, 4rem);
+  }
+  .game-card .label {
+    font-size: 1rem;
+  }
+}
+
+/* ============================================================
+   BUILD A TRAIN — ADD THESE TO THE END OF style.css
+   ============================================================ */
+
+.train-title {
+  font-family: 'Bowlby One', sans-serif;
+  font-size: clamp(1.2rem, 5vw, 1.6rem);
+  color: #2a2a3e;
+  text-align: center;
+  flex: 1;
+}
+
+.go-btn {
+  background: #6BCB77 !important;
+}
+.go-btn.riding {
+  animation: spin 0.8s linear infinite;
+  background: #FFD93D !important;
+}
+
+/* The sky scene that contains the train */
+.train-scene {
+  flex: 1;
+  position: relative;
+  margin: 8px;
+  background: linear-gradient(180deg, #B5E0FF 0%, #D8F0FF 50%, #C8E8B5 100%);
+  border-radius: 28px;
+  border: 5px solid #2a2a3e;
+  box-shadow: 0 6px 0 #2a2a3e;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.scene-sun {
+  position: absolute;
+  top: 8%;
+  right: 8%;
+  font-size: 3rem;
+  filter: drop-shadow(0 0 12px rgba(255, 220, 100, 0.6));
+  animation: sunPulse 4s ease-in-out infinite;
+}
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.08) rotate(20deg); }
+}
+
+.scene-cloud {
+  position: absolute;
+  font-size: 2.5rem;
+  opacity: 0.85;
+  animation: cloudDrift 25s linear infinite;
+}
+@keyframes cloudDrift {
+  from { transform: translateX(-20px); }
+  to { transform: translateX(20px); }
+}
+.scene-cloud:nth-child(odd) {
+  animation-direction: reverse;
+  animation-duration: 30s;
+}
+
+.scene-mountain {
+  position: absolute;
+  bottom: 30%;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background:
+    radial-gradient(circle at 15% 100%, #88a08c 30%, transparent 30%),
+    radial-gradient(circle at 50% 100%, #6b8c70 36%, transparent 36%),
+    radial-gradient(circle at 85% 100%, #88a08c 30%, transparent 30%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Track area along the bottom of the scene */
+.train-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10px 0;
+  transition: background 0.2s;
+}
+.train-track.drag-over {
+  background: rgba(255, 217, 61, 0.25);
+}
+
+/* The train cars container */
+.train-cars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  padding: 0 8px;
+  margin-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.train-cars::-webkit-scrollbar { display: none; }
+
+.train-cars.riding {
+  animation: trainRide 3.5s ease-in-out forwards;
+}
+@keyframes trainRide {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(40vw); }
+  50%  { transform: translateX(100vw); }
+  80%  { transform: translateX(-100vw); }
+  100% { transform: translateX(0); }
+}
+
+.train-piece {
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2));
+  transition: transform 0.2s;
+}
+.train-piece.loco {
+  width: 110px;
+  height: 80px;
+}
+.train-piece.car {
+  width: 95px;
+  height: 75px;
+  margin-left: -8px; /* slight overlap so couplers connect */
+}
+.train-piece svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.train-piece.car:active {
+  transform: scale(1.08);
+}
+.train-piece.snap-in {
+  animation: snapIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+@keyframes snapIn {
+  0% { transform: translateY(-40px) scale(0.5); opacity: 0; }
+  60% { transform: translateY(0) scale(1.2); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Spinning wheels when riding */
+.train-cars.riding .wheel-spoke {
+  animation: spinWheel 0.3s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes spinWheel {
+  to { transform: rotate(360deg); }
+}
+
+/* Animal passenger peeking out of a car window */
+.passenger {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.8rem;
+  pointer-events: none;
+  animation: passengerWave 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,0.2));
+}
+@keyframes passengerWave {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-5deg); }
+  50% { transform: translate(-50%, -50%) rotate(5deg); }
+}
+
+/* Train rails (subtle horizontal lines) */
+.track-rails {
+  position: relative;
+  height: 12px;
+  margin: 0 4px;
+  background:
+    linear-gradient(180deg,
+      transparent 0%,
+      transparent 30%,
+      #5a3a1a 30%,
+      #5a3a1a 45%,
+      transparent 45%,
+      transparent 55%,
+      #5a3a1a 55%,
+      #5a3a1a 70%,
+      transparent 70%);
+  border-radius: 2px;
+}
+
+/* Ties — the wooden cross-pieces */
+.track-ties {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 4px;
+  margin-top: -2px;
+}
+.track-ties::before {
+  content: '';
+  display: block;
+  height: 6px;
+  width: 100%;
+  background-image: repeating-linear-gradient(
+    90deg,
+    #5a3a1a 0,
+    #5a3a1a 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+
+/* Smoke puffs from the locomotive */
+.smoke-puff {
+  position: absolute;
+  font-size: 2rem;
+  pointer-events: none;
+  animation: smokeRise 1.5s ease-out forwards;
+  opacity: 0.7;
+}
+@keyframes smokeRise {
+  0%   { transform: translateY(0) scale(0.5); opacity: 0.8; }
+  100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+}
+
+/* Parts shelf at the bottom */
+.parts-shelf-wrap {
+  flex-shrink: 0;
+  padding: 4px 8px 8px;
+}
+.parts-label {
+  text-align: center;
+  font-weight: 700;
+  color: #6b6b8a;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  animation: pulse-msg 1.5s ease-in-out infinite;
+}
+
+.parts-shelf {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 8px 4px 10px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  background: white;
+  border: 4px solid #2a2a3e;
+  border-radius: 20px;
+  box-shadow: 0 5px 0 #2a2a3e;
+}
+.parts-shelf::-webkit-scrollbar { display: none; }
+
+.shelf-item {
+  flex-shrink: 0;
+  width: 100px;
+  height: 90px;
+  background: #FFF5D6;
+  border: 3px solid #2a2a3e;
+  border-radius: 14px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  box-shadow: 0 3px 0 #2a2a3e;
+  transition: transform 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.shelf-item:active {
+  transform: scale(0.95);
+  cursor: grabbing;
+}
+.shelf-item svg {
+  width: 90px;
+  height: 50px;
+  flex-shrink: 0;
+}
+.shelf-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2a2a3e;
+  margin-top: 2px;
+}
+
+/* Floating drag ghost (the car preview that follows the finger) */
+.drag-ghost {
+  position: fixed;
+  width: 120px;
+  height: 90px;
+  transform: translate(-50%, -50%) scale(1.15);
+  pointer-events: none;
+  z-index: 1000;
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+  opacity: 0.95;
+}
+.drag-ghost svg {
+  width: 100%;
+  height: 100%;
+}
