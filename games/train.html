@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#FFD93D" />
+<title>Jamaris Game — Build a Train</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="screen active" id="game">
+  <div class="top-bar">
+    <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
+    <div class="train-title">🚂 Build a Train</div>
+    <button class="icon-btn go-btn" id="goBtn" aria-label="Go!">▶️</button>
+  </div>
+
+  <!-- Sky scene with sun and clouds -->
+  <div class="train-scene" id="trainScene">
+    <div class="scene-sun">☀️</div>
+    <div class="scene-cloud" style="top: 15%; left: 10%;">☁️</div>
+    <div class="scene-cloud" style="top: 25%; right: 15%;">☁️</div>
+    <div class="scene-cloud" style="top: 8%; left: 50%;">☁️</div>
+    <div class="scene-mountain"></div>
+
+    <!-- Where the train lives -->
+    <div class="train-track" id="trainTrack">
+      <div class="train-cars" id="trainCars"></div>
+      <div class="track-rails"></div>
+      <div class="track-ties" id="trackTies"></div>
+    </div>
+  </div>
+
+  <!-- Parts shelf - drag cars from here -->
+  <div class="parts-shelf-wrap">
+    <div class="parts-label">Drag cars onto the tracks!</div>
+    <div class="parts-shelf" id="partsShelf"></div>
+  </div>
+</div>
+
+<!-- Celebration -->
+<div class="celebrate" id="celebrate">
+  <div class="msg" id="celebrateMsg">CHOO CHOO!</div>
+</div>
+
+<script src="../js/train.js"></script>
+</body>
+</html>
