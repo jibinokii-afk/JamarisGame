@@ -36,16 +36,21 @@
 <div class="screen" id="coloring">
   <div class="top-bar">
     <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
-    <div class="mini-stars">⭐ <span id="gameStars">0</span></div>
+    <div class="mode-toggle" id="modeToggle">
+      <button class="mode-btn active" data-mode="tap">👆 Tap</button>
+      <button class="mode-btn" data-mode="brush">✏️ Brush</button>
+    </div>
     <button class="icon-btn" id="nextBtn" aria-label="New animal">🔄</button>
   </div>
 
   <div class="canvas-wrap" id="canvasWrap">
-    <canvas id="ghostCanvas"></canvas>
+    <!-- Tap-to-fill mode: an interactive SVG with separate parts -->
+    <svg id="animalSvg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet"></svg>
+    <!-- Brush mode: a canvas overlay for free-draw -->
     <canvas id="drawCanvas"></canvas>
   </div>
 
-  <div class="brush-row">
+  <div class="brush-row" id="brushRow">
     <button class="brush-btn" data-brush="12">
       <span class="brush-dot" style="width:8px;height:8px;"></span> Small
     </button>
