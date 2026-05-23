@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#FFD93D" />
-<title>Jamaris Game — Counting</title>
+<title>Jamaris Game — Build a Train</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
@@ -14,134 +14,42 @@
 </head>
 <body>
 
-<!-- PICKER SCREEN -->
-<div class="screen active" id="picker">
+<div class="screen active" id="game">
   <div class="top-bar">
     <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
-    <div class="mini-stars">⭐ <span id="pickerStars">0</span></div>
-    <div style="width:52px;"></div>
+    <div class="train-title">🚂 Build a Train</div>
+    <button class="icon-btn go-btn" id="goBtn" aria-label="Go!">▶️</button>
   </div>
 
-  <div class="picker-title">
-    <h1>What to count?</h1>
-    <p>← swipe →</p>
-  </div>
+  <!-- Sky scene with sun and clouds -->
+  <div class="train-scene" id="trainScene">
+    <div class="scene-sun">☀️</div>
+    <div class="scene-cloud" style="top: 15%; left: 10%;">☁️</div>
+    <div class="scene-cloud" style="top: 25%; right: 15%;">☁️</div>
+    <div class="scene-cloud" style="top: 8%; left: 50%;">☁️</div>
+    <div class="scene-mountain"></div>
 
-  <div class="animal-carousel" id="countCarousel">
-    <!-- Cards inserted by JS -->
-  </div>
-</div>
-
-<!-- COUNTING SCREEN -->
-<div class="screen" id="game">
-  <div class="top-bar">
-    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
-    <div class="count-badge">
-      <span id="currentCount">0</span> / <span id="targetCount">1</span>
+    <!-- Where the train lives -->
+    <div class="train-track" id="trainTrack">
+      <div class="train-cars" id="trainCars"></div>
+      <div class="track-rails"></div>
+      <div class="track-ties" id="trackTies"></div>
     </div>
-    <button class="icon-btn" id="resetBtn" aria-label="Restart">🔄</button>
   </div>
 
-  <div class="number-display">
-    <div class="number-label">Count to</div>
-    <div class="big-number" id="bigNumber">1</div>
-  </div>
-
-  <div class="counting-wrap" id="countingWrap">
-    <!-- Objects spawned by JS -->
-  </div>
-
-  <div class="progress-bar">
-    <div class="progress-fill" id="progressFill"></div>
+  <!-- Parts shelf - drag cars from here -->
+  <div class="parts-shelf-wrap">
+    <div class="parts-label">Drag cars onto the tracks!</div>
+    <div class="parts-shelf" id="partsShelf"></div>
   </div>
 </div>
 
 <!-- Celebration -->
 <div class="celebrate" id="celebrate">
-  <div class="msg" id="celebrateMsg">YAY!</div>
+  <div class="msg" id="celebrateMsg">CHOO CHOO!</div>
 </div>
 
-<!-- Number-complete overlay -->
-<div class="number-complete" id="numberComplete">
-  <div class="number-complete-inner">
-    <div class="trophy">🏆</div>
-    <div class="big-number-done" id="completedNumber">1</div>
-    <div class="next-msg">Tap to keep going!</div>
-  </div>
-</div>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="theme-color" content="#FFD93D" />
-<title>Jamaris Game — Coloring</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
-
-<!-- PICKER SCREEN -->
-<div class="screen active" id="picker">
-  <div class="top-bar">
-    <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
-    <div class="mini-stars">⭐ <span id="pickerStars">0</span></div>
-    <div style="width:52px;"></div>
-  </div>
-
-  <div class="picker-title">
-    <h1>Pick an animal!</h1>
-    <p>← swipe →</p>
-  </div>
-
-  <div class="animal-carousel" id="animalCarousel">
-    <!-- Cards inserted by JS -->
-  </div>
-</div>
-
-<!-- COLORING SCREEN -->
-<div class="screen" id="coloring">
-  <div class="top-bar">
-    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
-    <div class="mode-toggle" id="modeToggle">
-      <button class="mode-btn active" data-mode="tap">👆 Tap</button>
-      <button class="mode-btn" data-mode="brush">✏️ Brush</button>
-    </div>
-    <button class="icon-btn" id="nextBtn" aria-label="New animal">🔄</button>
-  </div>
-
-  <div class="canvas-wrap" id="canvasWrap">
-    <!-- Tap-to-fill mode: an interactive SVG with separate parts -->
-    <svg id="animalSvg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet"></svg>
-    <!-- Brush mode: a canvas overlay for free-draw -->
-    <canvas id="drawCanvas"></canvas>
-  </div>
-
-  <div class="brush-row" id="brushRow">
-    <button class="brush-btn" data-brush="12">
-      <span class="brush-dot" style="width:8px;height:8px;"></span> Small
-    </button>
-    <button class="brush-btn active" data-brush="24">
-      <span class="brush-dot" style="width:14px;height:14px;"></span> Medium
-    </button>
-    <button class="brush-btn" data-brush="40">
-      <span class="brush-dot" style="width:22px;height:22px;"></span> Big
-    </button>
-    <button class="icon-btn" id="eraseBtn" aria-label="Erase">🧽</button>
-  </div>
-
-  <div class="palette" id="palette"></div>
-</div>
-
-<!-- Celebration -->
-<div class="celebrate" id="celebrate">
-  <div class="msg" id="celebrateMsg">YAY!</div>
-</div>
 <script src="../js/kiosk.js"></script>
-<script src="../js/coloring.js"></script>
+<script src="../js/train.js"></script>
 </body>
 </html>
