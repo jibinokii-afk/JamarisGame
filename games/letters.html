@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#FFD93D" />
+<title>Jamaris Game — Letters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<!-- PICKER SCREEN -->
+<div class="screen active" id="picker">
+  <div class="top-bar">
+    <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
+    <div class="mode-toggle" id="picker-mode-toggle">
+      <button class="mode-btn active" data-set="letters">ABC</button>
+      <button class="mode-btn" data-set="numbers">123</button>
+    </div>
+    <div class="mini-stars">⭐ <span id="pickerStars">0</span></div>
+  </div>
+
+  <div class="picker-title">
+    <h1>Pick a letter!</h1>
+    <p>← swipe →</p>
+  </div>
+
+  <div class="letter-grid" id="letterGrid">
+    <!-- Letter cards inserted by JS -->
+  </div>
+</div>
+
+<!-- TRACING SCREEN -->
+<div class="screen" id="game">
+  <div class="top-bar">
+    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
+    <div class="letter-progress" id="letterProgress">Stroke 1 of 3</div>
+    <button class="icon-btn" id="resetBtn" aria-label="Restart">🔄</button>
+  </div>
+
+  <div class="tracing-stage" id="tracingStage">
+    <svg id="letterSvg" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet">
+      <!-- Background letter, guide path, drawn line, and dots all inside this SVG -->
+    </svg>
+  </div>
+
+  <div class="letter-controls">
+    <button class="big-letter-btn" id="prevLetterBtn">⬅️</button>
+    <div class="current-letter-display" id="currentLetterDisplay">A</div>
+    <button class="big-letter-btn" id="nextLetterBtn">➡️</button>
+  </div>
+</div>
+
+<!-- Celebration -->
+<div class="celebrate" id="celebrate">
+  <div class="msg" id="celebrateMsg">A!</div>
+</div>
+
+<script src="../js/letters.js"></script>
+</body>
+</html>
