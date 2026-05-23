@@ -1,6 +1,8 @@
 /* ============================================================
-   JAMARIS GAME — Letter Tracing
-   Trace letters & numbers with finger; forgiving distance check
+   JAMARIS GAME — Letter Tracing v2
+   Smooth CURVED paths + smoother finger tracing
+   Each stroke is now an SVG path string (with curves), and we
+   SAMPLE points along it for the tracing math.
    ============================================================ */
 
 let stars = parseInt(localStorage.getItem('jamaris_stars') || '0', 10);
@@ -37,167 +39,173 @@ function playStrokeDone() {
   playTone(880, 0.08, 'triangle', 0.15);
   setTimeout(() => playTone(1100, 0.12, 'triangle', 0.13), 70);
 }
-function playLetterDone(letter) {
-  // Quick ascending fanfare
+function playLetterDone() {
   [523, 659, 784, 1047].forEach((f, i) =>
     setTimeout(() => playTone(f, 0.18, 'triangle', 0.18), i * 90)
   );
 }
 
 /* ============================================================
-   LETTER STROKE DATA
-   Coordinates are based on a 400x500 viewBox
-   Each letter is an array of strokes; each stroke is points to follow
+   LETTER STROKE DATA — now SVG path strings (with curves!)
+   viewBox is 400 x 500. Each letter = array of stroke path strings.
+   M = move, L = line, Q = quadratic curve, C = cubic curve
    ============================================================ */
 const LETTERS = {
   A: [
-    [{x:100, y:430}, {x:200, y:80}],         // left diagonal
-    [{x:200, y:80},  {x:300, y:430}],         // right diagonal
-    [{x:140, y:300}, {x:260, y:300}]          // crossbar
+    'M 110 430 L 200 90',
+    'M 200 90 L 290 430',
+    'M 145 300 L 255 300'
   ],
   B: [
-    [{x:130, y:80}, {x:130, y:430}],                                            // vertical
-    [{x:130, y:80}, {x:240, y:80}, {x:290, y:140}, {x:240, y:240}, {x:130, y:240}],  // top bump
-    [{x:130, y:240}, {x:260, y:240}, {x:310, y:330}, {x:260, y:430}, {x:130, y:430}] // bottom bump
+    'M 130 80 L 130 430',
+    'M 130 80 L 230 80 Q 300 80 300 160 Q 300 240 230 240 L 130 240',
+    'M 130 240 L 240 240 Q 320 240 320 335 Q 320 430 240 430 L 130 430'
   ],
   C: [
-    [{x:310, y:140}, {x:230, y:80}, {x:130, y:130}, {x:90, y:255}, {x:130, y:380}, {x:230, y:430}, {x:310, y:370}]
+    'M 310 150 Q 270 80 190 80 Q 80 80 80 255 Q 80 430 190 430 Q 270 430 310 360'
   ],
   D: [
-    [{x:130, y:80}, {x:130, y:430}],                                                          // vertical
-    [{x:130, y:80}, {x:240, y:80}, {x:310, y:175}, {x:310, y:335}, {x:240, y:430}, {x:130, y:430}] // curve
+    'M 130 80 L 130 430',
+    'M 130 80 L 220 80 Q 320 80 320 255 Q 320 430 220 430 L 130 430'
   ],
   E: [
-    [{x:310, y:80}, {x:130, y:80}, {x:130, y:430}, {x:310, y:430}],   // outline (left vertical + top + bottom)
-    [{x:130, y:255}, {x:260, y:255}]                                   // middle
+    'M 300 80 L 130 80 L 130 430 L 300 430',
+    'M 130 255 L 260 255'
   ],
   F: [
-    [{x:310, y:80}, {x:130, y:80}, {x:130, y:430}],   // top + left vertical
-    [{x:130, y:255}, {x:260, y:255}]                   // middle
+    'M 300 80 L 130 80 L 130 430',
+    'M 130 255 L 260 255'
   ],
   G: [
-    [{x:310, y:140}, {x:230, y:80}, {x:130, y:130}, {x:90, y:255}, {x:130, y:380}, {x:230, y:430}, {x:310, y:380}, {x:310, y:280}, {x:230, y:280}]
+    'M 310 150 Q 270 80 190 80 Q 80 80 80 255 Q 80 430 190 430 Q 310 430 310 300 L 310 280 L 220 280'
   ],
   H: [
-    [{x:130, y:80}, {x:130, y:430}],   // left vertical
-    [{x:270, y:80}, {x:270, y:430}],   // right vertical
-    [{x:130, y:255}, {x:270, y:255}]   // crossbar
+    'M 130 80 L 130 430',
+    'M 270 80 L 270 430',
+    'M 130 255 L 270 255'
   ],
   I: [
-    [{x:140, y:80}, {x:260, y:80}],     // top bar
-    [{x:200, y:80}, {x:200, y:430}],    // vertical
-    [{x:140, y:430}, {x:260, y:430}]    // bottom bar
+    'M 140 80 L 260 80',
+    'M 200 80 L 200 430',
+    'M 140 430 L 260 430'
   ],
   J: [
-    [{x:140, y:80}, {x:260, y:80}],                                       // top bar
-    [{x:230, y:80}, {x:230, y:330}, {x:170, y:410}, {x:100, y:380}]        // J curve
+    'M 140 80 L 260 80',
+    'M 220 80 L 220 340 Q 220 430 140 430 Q 90 430 85 370'
   ],
   K: [
-    [{x:130, y:80}, {x:130, y:430}],     // vertical
-    [{x:290, y:80}, {x:130, y:255}],     // upper diagonal
-    [{x:130, y:255}, {x:290, y:430}]     // lower diagonal
+    'M 130 80 L 130 430',
+    'M 290 80 L 130 255',
+    'M 130 255 L 295 430'
   ],
   L: [
-    [{x:130, y:80}, {x:130, y:430}, {x:300, y:430}]
+    'M 130 80 L 130 430 L 300 430'
   ],
   M: [
-    [{x:100, y:430}, {x:100, y:80}, {x:200, y:280}, {x:300, y:80}, {x:300, y:430}]
+    'M 100 430 L 100 80 L 200 280 L 300 80 L 300 430'
   ],
   N: [
-    [{x:120, y:430}, {x:120, y:80}, {x:280, y:430}, {x:280, y:80}]
+    'M 120 430 L 120 80 L 280 430 L 280 80'
   ],
   O: [
-    [{x:200, y:80}, {x:90, y:140}, {x:60, y:255}, {x:90, y:370}, {x:200, y:430}, {x:310, y:370}, {x:340, y:255}, {x:310, y:140}, {x:200, y:80}]
+    'M 200 80 Q 80 80 80 255 Q 80 430 200 430 Q 320 430 320 255 Q 320 80 200 80 Z'
   ],
   P: [
-    [{x:130, y:430}, {x:130, y:80}, {x:240, y:80}, {x:300, y:145}, {x:240, y:240}, {x:130, y:240}]
+    'M 130 430 L 130 80 L 240 80 Q 320 80 320 165 Q 320 250 240 250 L 130 250'
   ],
   Q: [
-    [{x:200, y:80}, {x:90, y:140}, {x:60, y:255}, {x:90, y:370}, {x:200, y:430}, {x:310, y:370}, {x:340, y:255}, {x:310, y:140}, {x:200, y:80}],
-    [{x:240, y:340}, {x:340, y:450}]   // tail
+    'M 200 80 Q 80 80 80 255 Q 80 430 200 430 Q 320 430 320 255 Q 320 80 200 80 Z',
+    'M 240 330 L 340 450'
   ],
   R: [
-    [{x:130, y:430}, {x:130, y:80}, {x:240, y:80}, {x:300, y:145}, {x:240, y:240}, {x:130, y:240}],
-    [{x:200, y:240}, {x:310, y:430}]   // diagonal leg
+    'M 130 430 L 130 80 L 240 80 Q 320 80 320 165 Q 320 250 240 250 L 130 250',
+    'M 210 250 L 310 430'
   ],
   S: [
-    [{x:310, y:130}, {x:240, y:80}, {x:130, y:130}, {x:130, y:200}, {x:200, y:255}, {x:300, y:280}, {x:300, y:380}, {x:240, y:430}, {x:130, y:400}, {x:90, y:350}]
+    'M 310 130 Q 250 75 170 100 Q 90 125 130 210 Q 160 270 250 285 Q 320 300 300 380 Q 280 440 180 420 Q 110 405 90 350'
   ],
   T: [
-    [{x:90, y:80}, {x:310, y:80}],     // horizontal
-    [{x:200, y:80}, {x:200, y:430}]    // vertical
+    'M 90 80 L 310 80',
+    'M 200 80 L 200 430'
   ],
   U: [
-    [{x:120, y:80}, {x:120, y:330}, {x:200, y:430}, {x:280, y:330}, {x:280, y:80}]
+    'M 120 80 L 120 320 Q 120 430 200 430 Q 280 430 280 320 L 280 80'
   ],
   V: [
-    [{x:100, y:80}, {x:200, y:430}],   // left diagonal
-    [{x:200, y:430}, {x:300, y:80}]    // right diagonal
+    'M 100 80 L 200 430',
+    'M 200 430 L 300 80'
   ],
   W: [
-    [{x:80, y:80}, {x:140, y:430}, {x:200, y:200}, {x:260, y:430}, {x:320, y:80}]
+    'M 80 80 L 140 430 L 200 200 L 260 430 L 320 80'
   ],
   X: [
-    [{x:100, y:80}, {x:300, y:430}],   // diagonal 1
-    [{x:300, y:80}, {x:100, y:430}]    // diagonal 2
+    'M 100 80 L 300 430',
+    'M 300 80 L 100 430'
   ],
   Y: [
-    [{x:100, y:80}, {x:200, y:255}],          // left diagonal
-    [{x:300, y:80}, {x:200, y:255}],          // right diagonal
-    [{x:200, y:255}, {x:200, y:430}]          // vertical
+    'M 100 80 L 200 255',
+    'M 300 80 L 200 255',
+    'M 200 255 L 200 430'
   ],
   Z: [
-    [{x:100, y:80}, {x:300, y:80}, {x:100, y:430}, {x:300, y:430}]
+    'M 100 80 L 300 80 L 100 430 L 300 430'
   ]
 };
 
 const NUMBERS = {
-  '0': [
-    [{x:200, y:80}, {x:120, y:140}, {x:100, y:255}, {x:120, y:370}, {x:200, y:430}, {x:280, y:370}, {x:300, y:255}, {x:280, y:140}, {x:200, y:80}]
-  ],
-  '1': [
-    [{x:130, y:150}, {x:200, y:80}, {x:200, y:430}],
-    [{x:130, y:430}, {x:270, y:430}]
-  ],
-  '2': [
-    [{x:110, y:140}, {x:200, y:80}, {x:290, y:140}, {x:280, y:240}, {x:110, y:430}, {x:300, y:430}]
-  ],
+  '0': ['M 200 80 Q 90 80 90 255 Q 90 430 200 430 Q 310 430 310 255 Q 310 80 200 80 Z'],
+  '1': ['M 130 150 L 200 80 L 200 430', 'M 130 430 L 270 430'],
+  '2': ['M 100 150 Q 130 80 200 80 Q 290 80 290 160 Q 290 230 110 430 L 300 430'],
   '3': [
-    [{x:110, y:130}, {x:200, y:80}, {x:280, y:130}, {x:280, y:200}, {x:200, y:250}],
-    [{x:200, y:250}, {x:280, y:300}, {x:280, y:380}, {x:200, y:430}, {x:110, y:380}]
+    'M 110 130 Q 150 75 220 90 Q 290 105 270 190 Q 255 240 190 250',
+    'M 190 250 Q 270 255 290 320 Q 305 400 220 425 Q 140 440 100 380'
   ],
-  '4': [
-    [{x:240, y:80}, {x:100, y:300}, {x:300, y:300}],
-    [{x:240, y:160}, {x:240, y:430}]
-  ],
-  '5': [
-    [{x:290, y:80}, {x:130, y:80}, {x:130, y:230}, {x:230, y:220}, {x:300, y:280}, {x:300, y:380}, {x:230, y:430}, {x:120, y:410}]
-  ],
-  '6': [
-    [{x:290, y:120}, {x:200, y:80}, {x:130, y:160}, {x:100, y:280}, {x:120, y:380}, {x:200, y:430}, {x:290, y:380}, {x:300, y:300}, {x:230, y:240}, {x:130, y:280}]
-  ],
-  '7': [
-    [{x:90, y:80}, {x:310, y:80}, {x:170, y:430}]
-  ],
+  '4': ['M 240 80 L 100 300 L 300 300', 'M 240 150 L 240 430'],
+  '5': ['M 290 80 L 130 80 L 125 220 Q 200 195 270 235 Q 320 270 300 350 Q 280 425 180 415 Q 120 408 100 370'],
+  '6': ['M 280 110 Q 220 75 160 110 Q 100 155 95 290 Q 95 430 200 430 Q 305 430 305 320 Q 305 235 215 235 Q 140 235 110 300'],
+  '7': ['M 90 80 L 310 80 L 170 430'],
   '8': [
-    [{x:200, y:255}, {x:130, y:200}, {x:130, y:130}, {x:200, y:80}, {x:280, y:130}, {x:280, y:200}, {x:200, y:255}, {x:120, y:310}, {x:110, y:380}, {x:200, y:430}, {x:290, y:380}, {x:280, y:310}, {x:200, y:255}]
+    'M 200 250 Q 110 230 110 160 Q 110 80 200 80 Q 290 80 290 160 Q 290 230 200 250 Q 100 275 100 360 Q 100 440 200 440 Q 300 440 300 360 Q 300 275 200 250 Z'
   ],
-  '9': [
-    [{x:200, y:255}, {x:130, y:210}, {x:130, y:130}, {x:200, y:80}, {x:280, y:130}, {x:300, y:240}, {x:280, y:360}, {x:200, y:430}, {x:120, y:400}]
-  ]
+  '9': ['M 290 230 Q 260 290 190 290 Q 95 290 95 185 Q 95 80 200 80 Q 305 80 305 210 Q 305 350 240 410 Q 200 445 130 420']
 };
+
+/* ============================================================
+   PATH SAMPLING — Convert each SVG path string into an array of
+   {x,y} points, using a hidden <path> element + getPointAtLength.
+   This lets us measure & follow the actual curve precisely.
+   ============================================================ */
+const measureSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+measureSvg.setAttribute('width', '0');
+measureSvg.setAttribute('height', '0');
+measureSvg.style.position = 'absolute';
+measureSvg.style.visibility = 'hidden';
+document.body.appendChild(measureSvg);
+const measurePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+measureSvg.appendChild(measurePath);
+
+function samplePath(pathStr, samples = 60) {
+  measurePath.setAttribute('d', pathStr);
+  const total = measurePath.getTotalLength();
+  const pts = [];
+  for (let i = 0; i <= samples; i++) {
+    const p = measurePath.getPointAtLength((total * i) / samples);
+    pts.push({ x: p.x, y: p.y });
+  }
+  return pts;
+}
 
 /* ============================================================
    STATE
    ============================================================ */
 let currentSet = 'letters';
 let currentLetter = 'A';
-let currentStrokes = [];
+let currentStrokePaths = [];   // SVG path strings for the active letter
+let currentSamples = [];       // sampled point arrays, one per stroke
 let currentStrokeIdx = 0;
-let traceProgress = []; // for each stroke, fraction (0..1) of how far along
+let traceProgress = [];         // 0..1 fraction along each stroke
 let completedStrokes = [];
 let isDrawing = false;
-let lastPos = null;
 
 /* ============================================================
    BUILD PICKER GRID
@@ -207,7 +215,6 @@ function renderPicker() {
   grid.innerHTML = '';
   const set = currentSet === 'letters' ? LETTERS : NUMBERS;
   const colors = ['#FF3B6C', '#FF6B35', '#FFA62B', '#FFD93D', '#A8E063', '#56CCF2', '#4D96FF', '#9B5DE5', '#FF7AD9'];
-
   Object.keys(set).forEach((key, idx) => {
     const card = document.createElement('div');
     card.className = 'letter-card';
@@ -231,15 +238,16 @@ document.querySelectorAll('#picker-mode-toggle .mode-btn').forEach(btn => {
 });
 
 /* ============================================================
-   START TRACING A LETTER
+   START TRACING
    ============================================================ */
 function startTracing(letter) {
   playClick();
   currentLetter = letter;
   const set = currentSet === 'letters' ? LETTERS : NUMBERS;
-  currentStrokes = set[letter];
+  currentStrokePaths = set[letter];
+  currentSamples = currentStrokePaths.map(p => samplePath(p));
   currentStrokeIdx = 0;
-  traceProgress = currentStrokes.map(() => 0);
+  traceProgress = currentStrokePaths.map(() => 0);
   completedStrokes = [];
 
   document.getElementById('picker').classList.remove('active');
@@ -259,165 +267,137 @@ function changeLetter(direction) {
   playClick();
   const set = currentSet === 'letters' ? LETTERS : NUMBERS;
   const keys = Object.keys(set);
-  const currentIdx = keys.indexOf(currentLetter);
-  const newIdx = (currentIdx + direction + keys.length) % keys.length;
-  startTracing(keys[newIdx]);
+  const idx = keys.indexOf(currentLetter);
+  startTracing(keys[(idx + direction + keys.length) % keys.length]);
 }
 
 function resetLetter() {
   playClick();
   currentStrokeIdx = 0;
-  traceProgress = currentStrokes.map(() => 0);
+  traceProgress = currentStrokePaths.map(() => 0);
   completedStrokes = [];
   renderLetter();
   updateProgress();
 }
 
 function updateProgress() {
-  const total = currentStrokes.length;
+  const total = currentStrokePaths.length;
   const done = completedStrokes.length;
+  const el = document.getElementById('letterProgress');
   if (done >= total) {
-    document.getElementById('letterProgress').textContent = '✨ Done! ✨';
-    document.getElementById('letterProgress').classList.add('done');
+    el.textContent = '✨ Done! ✨';
+    el.classList.add('done');
   } else {
-    document.getElementById('letterProgress').textContent = `Stroke ${done + 1} of ${total}`;
-    document.getElementById('letterProgress').classList.remove('done');
+    el.textContent = `Stroke ${done + 1} of ${total}`;
+    el.classList.remove('done');
   }
 }
 
 /* ============================================================
-   RENDER THE LETTER + GUIDE PATHS
+   RENDER (uses the curved path strings directly = smooth!)
    ============================================================ */
 const svg = document.getElementById('letterSvg');
+function NS(tag) { return document.createElementNS('http://www.w3.org/2000/svg', tag); }
 
-function pointsToPath(points) {
-  if (points.length === 0) return '';
-  let str = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 1; i < points.length; i++) {
-    str += ` L ${points[i].x} ${points[i].y}`;
+function getPartialPathString(strokeIdx, fraction) {
+  // Build a partial path by sampling points up to `fraction`
+  const samples = currentSamples[strokeIdx];
+  const n = Math.max(1, Math.floor(samples.length * fraction));
+  if (n < 1) return '';
+  let str = `M ${samples[0].x} ${samples[0].y}`;
+  for (let i = 1; i <= n && i < samples.length; i++) {
+    str += ` L ${samples[i].x} ${samples[i].y}`;
   }
   return str;
 }
 
-function getPartialPath(points, fraction) {
-  // Returns SVG path for the first `fraction` of the points
-  if (fraction <= 0 || points.length < 2) return '';
-  // Compute total length and target length
-  let totalLen = 0;
-  const segs = [];
-  for (let i = 1; i < points.length; i++) {
-    const dx = points[i].x - points[i-1].x;
-    const dy = points[i].y - points[i-1].y;
-    const len = Math.sqrt(dx*dx + dy*dy);
-    segs.push(len);
-    totalLen += len;
-  }
-  const targetLen = totalLen * fraction;
-  let walked = 0;
-  let path = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 1; i < points.length; i++) {
-    const seg = segs[i-1];
-    if (walked + seg <= targetLen) {
-      path += ` L ${points[i].x} ${points[i].y}`;
-      walked += seg;
-    } else {
-      const remaining = targetLen - walked;
-      const t = remaining / seg;
-      const x = points[i-1].x + (points[i].x - points[i-1].x) * t;
-      const y = points[i-1].y + (points[i].y - points[i-1].y) * t;
-      path += ` L ${x} ${y}`;
-      break;
-    }
-  }
-  return path;
+function getTracePoint() {
+  if (currentStrokeIdx >= currentSamples.length) return { x: 0, y: 0 };
+  const samples = currentSamples[currentStrokeIdx];
+  const frac = traceProgress[currentStrokeIdx];
+  const idx = Math.min(samples.length - 1, Math.floor(frac * (samples.length - 1)));
+  return samples[idx];
 }
 
 function renderLetter() {
   svg.innerHTML = '';
 
-  // 1. Big background letter outline (the "ghost")
-  const bg = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  // 1. Big faint background letter
+  const bg = NS('text');
   bg.setAttribute('x', '200');
   bg.setAttribute('y', '410');
   bg.setAttribute('text-anchor', 'middle');
   bg.setAttribute('font-family', 'Bowlby One, sans-serif');
   bg.setAttribute('font-size', '450');
-  bg.setAttribute('fill', 'rgba(42, 42, 62, 0.08)');
-  bg.setAttribute('stroke', 'rgba(42, 42, 62, 0.15)');
-  bg.setAttribute('stroke-width', '4');
+  bg.setAttribute('fill', 'rgba(42, 42, 62, 0.06)');
   bg.textContent = currentLetter;
   svg.appendChild(bg);
 
-  // 2. Render each stroke as a dashed guide line
-  currentStrokes.forEach((stroke, idx) => {
-    const guide = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    guide.setAttribute('d', pointsToPath(stroke));
+  // 2. Guide lines (SMOOTH curves now, drawn from the path strings)
+  currentStrokePaths.forEach((pathStr, idx) => {
+    if (completedStrokes.includes(idx)) return; // hide finished guides
+    const guide = NS('path');
+    guide.setAttribute('d', pathStr);
     guide.setAttribute('fill', 'none');
-    guide.setAttribute('stroke', idx === currentStrokeIdx ? '#FFD93D' : (completedStrokes.includes(idx) ? 'transparent' : 'rgba(42,42,62,0.3)'));
-    guide.setAttribute('stroke-width', '6');
-    guide.setAttribute('stroke-dasharray', '8 10');
+    guide.setAttribute('stroke', idx === currentStrokeIdx ? '#FFD93D' : 'rgba(42,42,62,0.25)');
+    guide.setAttribute('stroke-width', '8');
+    guide.setAttribute('stroke-dasharray', '2 18');
     guide.setAttribute('stroke-linecap', 'round');
     guide.setAttribute('stroke-linejoin', 'round');
-    guide.setAttribute('class', idx === currentStrokeIdx ? 'guide-active' : '');
+    if (idx === currentStrokeIdx) guide.setAttribute('class', 'guide-active');
     svg.appendChild(guide);
   });
 
-  // 3. Completed strokes drawn in rainbow color
-  completedStrokes.forEach((strokeIdx, doneIdx) => {
-    const stroke = currentStrokes[strokeIdx];
-    const drawn = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    drawn.setAttribute('d', pointsToPath(stroke));
-    drawn.setAttribute('fill', 'none');
-    const colors = ['#FF3B6C', '#FFA62B', '#FFD93D', '#6BCB77', '#56CCF2', '#9B5DE5', '#FF7AD9'];
-    drawn.setAttribute('stroke', colors[doneIdx % colors.length]);
-    drawn.setAttribute('stroke-width', '20');
-    drawn.setAttribute('stroke-linecap', 'round');
-    drawn.setAttribute('stroke-linejoin', 'round');
-    drawn.setAttribute('opacity', '0.85');
-    svg.appendChild(drawn);
+  // 3. Completed strokes (full smooth colored paths)
+  const cols = ['#FF3B6C', '#FFA62B', '#FFD93D', '#6BCB77', '#56CCF2', '#9B5DE5', '#FF7AD9'];
+  completedStrokes.forEach((si, di) => {
+    const d = NS('path');
+    d.setAttribute('d', currentStrokePaths[si]);
+    d.setAttribute('fill', 'none');
+    d.setAttribute('stroke', cols[di % cols.length]);
+    d.setAttribute('stroke-width', '22');
+    d.setAttribute('stroke-linecap', 'round');
+    d.setAttribute('stroke-linejoin', 'round');
+    d.setAttribute('opacity', '0.9');
+    svg.appendChild(d);
   });
 
-  // 4. Partial current stroke being drawn
-  if (currentStrokeIdx < currentStrokes.length && traceProgress[currentStrokeIdx] > 0) {
-    const partial = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    partial.setAttribute('d', getPartialPath(currentStrokes[currentStrokeIdx], traceProgress[currentStrokeIdx]));
+  // 4. Partial in-progress stroke
+  if (currentStrokeIdx < currentStrokePaths.length && traceProgress[currentStrokeIdx] > 0) {
+    const partial = NS('path');
+    partial.setAttribute('d', getPartialPathString(currentStrokeIdx, traceProgress[currentStrokeIdx]));
     partial.setAttribute('fill', 'none');
     partial.setAttribute('stroke', '#FF3B6C');
-    partial.setAttribute('stroke-width', '20');
+    partial.setAttribute('stroke-width', '22');
     partial.setAttribute('stroke-linecap', 'round');
     partial.setAttribute('stroke-linejoin', 'round');
     svg.appendChild(partial);
   }
 
-  // 5. Start dot for the current stroke (pulsing)
-  if (currentStrokeIdx < currentStrokes.length && traceProgress[currentStrokeIdx] < 1) {
-    const stroke = currentStrokes[currentStrokeIdx];
-    const startIdx = traceProgress[currentStrokeIdx] === 0 ? 0 : 0; // always show at start
-    const startPoint = getCurrentTracePoint();
-
-    // Pulsing halo
-    const halo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    halo.setAttribute('cx', startPoint.x);
-    halo.setAttribute('cy', startPoint.y);
+  // 5. Pulsing start/leading dot
+  if (currentStrokeIdx < currentStrokePaths.length && traceProgress[currentStrokeIdx] < 1) {
+    const sp = getTracePoint();
+    const halo = NS('circle');
+    halo.setAttribute('cx', sp.x);
+    halo.setAttribute('cy', sp.y);
     halo.setAttribute('r', '30');
     halo.setAttribute('fill', '#FFD93D');
     halo.setAttribute('opacity', '0.4');
     halo.setAttribute('class', 'trace-halo');
     svg.appendChild(halo);
 
-    // The numbered dot
-    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    dot.setAttribute('cx', startPoint.x);
-    dot.setAttribute('cy', startPoint.y);
+    const dot = NS('circle');
+    dot.setAttribute('cx', sp.x);
+    dot.setAttribute('cy', sp.y);
     dot.setAttribute('r', '22');
     dot.setAttribute('fill', '#FF3B6C');
     dot.setAttribute('stroke', '#2a2a3e');
     dot.setAttribute('stroke-width', '4');
     svg.appendChild(dot);
 
-    const num = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    num.setAttribute('x', startPoint.x);
-    num.setAttribute('y', startPoint.y + 8);
+    const num = NS('text');
+    num.setAttribute('x', sp.x);
+    num.setAttribute('y', sp.y + 8);
     num.setAttribute('text-anchor', 'middle');
     num.setAttribute('font-family', 'Bowlby One, sans-serif');
     num.setAttribute('font-size', '24');
@@ -427,122 +407,49 @@ function renderLetter() {
   }
 }
 
-function getCurrentTracePoint() {
-  // Where along the current stroke is the leading edge?
-  if (currentStrokeIdx >= currentStrokes.length) return { x: 0, y: 0 };
-  const stroke = currentStrokes[currentStrokeIdx];
-  const frac = traceProgress[currentStrokeIdx];
-  if (frac === 0) return stroke[0];
-  // Walk along the stroke to find the point
-  let totalLen = 0;
-  const segs = [];
-  for (let i = 1; i < stroke.length; i++) {
-    const dx = stroke[i].x - stroke[i-1].x;
-    const dy = stroke[i].y - stroke[i-1].y;
-    const len = Math.sqrt(dx*dx + dy*dy);
-    segs.push(len);
-    totalLen += len;
-  }
-  const targetLen = totalLen * frac;
-  let walked = 0;
-  for (let i = 1; i < stroke.length; i++) {
-    if (walked + segs[i-1] >= targetLen) {
-      const remaining = targetLen - walked;
-      const t = remaining / segs[i-1];
-      return {
-        x: stroke[i-1].x + (stroke[i].x - stroke[i-1].x) * t,
-        y: stroke[i-1].y + (stroke[i].y - stroke[i-1].y) * t
-      };
-    }
-    walked += segs[i-1];
-  }
-  return stroke[stroke.length - 1];
-}
-
 /* ============================================================
-   TRACING LOGIC
-   - As finger moves, find the nearest point on the active stroke's
-     "expected next position" — if close enough, advance progress.
+   TRACING — finger follows the sampled points
    ============================================================ */
-const stage = document.getElementById('tracingStage');
-
 function getSvgPos(e) {
-  const touch = e.touches ? e.touches[0] : e;
-  if (!touch) return null;
-  // Convert from screen coords to SVG viewBox coords
+  const t = e.touches ? e.touches[0] : e;
+  if (!t) return null;
   const rect = svg.getBoundingClientRect();
-  const x = ((touch.clientX - rect.left) / rect.width) * 400;
-  const y = ((touch.clientY - rect.top) / rect.height) * 500;
-  return { x, y };
+  return {
+    x: ((t.clientX - rect.left) / rect.width) * 400,
+    y: ((t.clientY - rect.top) / rect.height) * 500
+  };
 }
+function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
 
-function strokeLength(stroke) {
-  let total = 0;
-  for (let i = 1; i < stroke.length; i++) {
-    const dx = stroke[i].x - stroke[i-1].x;
-    const dy = stroke[i].y - stroke[i-1].y;
-    total += Math.sqrt(dx*dx + dy*dy);
-  }
-  return total;
-}
+const TOLERANCE = 75; // how close the finger must be to the path
 
-function dist(p1, p2) {
-  const dx = p1.x - p2.x;
-  const dy = p1.y - p2.y;
-  return Math.sqrt(dx*dx + dy*dy);
-}
+function tryAdvance(fp) {
+  if (currentStrokeIdx >= currentSamples.length) return;
+  const samples = currentSamples[currentStrokeIdx];
+  const cur = traceProgress[currentStrokeIdx];
 
-function tryAdvance(fingerPos) {
-  if (currentStrokeIdx >= currentStrokes.length) return;
-  const stroke = currentStrokes[currentStrokeIdx];
-  const currentPoint = getCurrentTracePoint();
-  const distToCurrent = dist(fingerPos, currentPoint);
+  // Must be near the current leading point to start/continue
+  if (dist(fp, getTracePoint()) > TOLERANCE) return;
 
-  // Tolerance: how close finger needs to be to count
-  const TOLERANCE = 70;
-
-  if (distToCurrent > TOLERANCE) return; // too far away, ignore
-
-  // The finger is close enough; advance progress.
-  // Calculate how much of the stroke length the finger has moved along.
-  const totalLen = strokeLength(stroke);
-
-  // Find the closest point on the *next* part of the stroke to the finger
-  const currentFrac = traceProgress[currentStrokeIdx];
-  let walked = 0;
-  let bestFrac = currentFrac;
-  let bestDist = Infinity;
-
-  for (let i = 1; i < stroke.length; i++) {
-    const segLen = dist(stroke[i-1], stroke[i]);
-    // Project finger position onto this segment
-    const ax = stroke[i-1].x, ay = stroke[i-1].y;
-    const bx = stroke[i].x, by = stroke[i].y;
-    const fx = fingerPos.x, fy = fingerPos.y;
-    const segDx = bx - ax, segDy = by - ay;
-    const segLenSq = segDx*segDx + segDy*segDy;
-    const t = Math.max(0, Math.min(1, ((fx - ax) * segDx + (fy - ay) * segDy) / segLenSq));
-    const px = ax + segDx * t;
-    const py = ay + segDy * t;
-    const projDist = Math.hypot(fx - px, fy - py);
-    const lenAtThisPoint = walked + segLen * t;
-    const frac = lenAtThisPoint / totalLen;
-    // Only consider forward progress within tolerance
-    if (frac >= currentFrac && projDist < TOLERANCE && projDist < bestDist) {
-      bestDist = projDist;
-      bestFrac = frac;
+  // Find the furthest-forward sample point the finger is close to
+  let bestFrac = cur;
+  const curIdx = Math.floor(cur * (samples.length - 1));
+  for (let i = curIdx; i < samples.length; i++) {
+    const d = dist(fp, samples[i]);
+    if (d < TOLERANCE) {
+      const frac = i / (samples.length - 1);
+      if (frac > bestFrac) bestFrac = frac;
+    } else if (i > curIdx + 2) {
+      // stop scanning once we move clearly away (prevents skipping across gaps)
+      break;
     }
-    walked += segLen;
   }
 
-  if (bestFrac > currentFrac) {
+  if (bestFrac > cur) {
     traceProgress[currentStrokeIdx] = bestFrac;
     playTrace();
     renderLetter();
-    // Stroke complete?
-    if (bestFrac >= 0.97) {
-      strokeComplete();
-    }
+    if (bestFrac >= 0.96) strokeComplete();
   }
 }
 
@@ -552,22 +459,19 @@ function strokeComplete() {
   playStrokeDone();
   currentStrokeIdx++;
   updateProgress();
-
-  if (currentStrokeIdx >= currentStrokes.length) {
-    setTimeout(letterComplete, 500);
+  if (currentStrokeIdx >= currentStrokePaths.length) {
+    setTimeout(letterComplete, 450);
   } else {
     renderLetter();
   }
 }
 
 function letterComplete() {
-  // Pre-fill currentStrokeIdx past the end so no start dot shows
   renderLetter();
   stars++;
   saveStars();
   updateStars();
-  playLetterDone(currentLetter);
-
+  playLetterDone();
   const c = document.getElementById('celebrate');
   document.getElementById('celebrateMsg').textContent = currentLetter + '!';
   c.classList.add('active');
@@ -596,23 +500,16 @@ function startTrace(e) {
   const pos = getSvgPos(e);
   if (!pos) return;
   isDrawing = true;
-  lastPos = pos;
   tryAdvance(pos);
 }
-
 function moveTrace(e) {
   if (!isDrawing) return;
   e.preventDefault();
   const pos = getSvgPos(e);
   if (!pos) return;
-  lastPos = pos;
   tryAdvance(pos);
 }
-
-function endTrace() {
-  isDrawing = false;
-  lastPos = null;
-}
+function endTrace() { isDrawing = false; }
 
 svg.addEventListener('mousedown', startTrace);
 svg.addEventListener('mousemove', moveTrace);
