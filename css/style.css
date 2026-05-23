@@ -1696,3 +1696,205 @@ a { text-decoration: none; color: inherit; }
    LETTERS HOME CARD COLOR — append to style.css
    ============================================================ */
 .game-card.letters { background: #C8F0D8; }
+
+/* ============================================================
+   KIOSK MODE + OLD DEVICE + TABLET SUPPORT
+   ADD TO END OF style.css
+   ============================================================ */
+
+/* ---------- OLD DEVICE: 100dvh fallback ----------
+   Older iOS Safari ignores 100dvh. We set --real-vh from JS.
+   This rule provides the fallback height. */
+body {
+  min-height: 100vh;
+  min-height: var(--real-vh, 100vh);
+}
+@supports (height: 100dvh) {
+  body { min-height: 100dvh; }
+}
+
+/* aspect-ratio fallback for very old Safari (<15) on game cards */
+@supports not (aspect-ratio: 1) {
+  .game-card {
+    height: 0;
+    padding-bottom: 100%; /* makes a square */
+    position: relative;
+  }
+  .game-card > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* ---------- FULLSCREEN BUTTON (bottom-left corner) ---------- */
+.kiosk-fs-btn {
+  position: fixed;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: max(10px, env(safe-area-inset-left));
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 4px solid #2a2a3e;
+  background: white;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #2a2a3e;
+  z-index: 9000;
+  opacity: 0.55;
+  transition: opacity 0.2s, transform 0.1s;
+  padding: 0;
+}
+.kiosk-fs-btn:hover { opacity: 1; }
+.kiosk-fs-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #2a2a3e;
+  opacity: 1;
+}
+
+/* ---------- CHILD LOCK BUTTON (bottom-right corner) ---------- */
+.kiosk-lock-btn {
+  position: fixed;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  right: max(10px, env(safe-area-inset-right));
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 4px solid #2a2a3e;
+  background: white;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #2a2a3e;
+  z-index: 10001; /* ABOVE the shield, so it stays tappable when locked */
+  opacity: 0.55;
+  transition: opacity 0.2s, transform 0.1s, background 0.2s;
+  padding: 0;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.kiosk-lock-btn:hover { opacity: 1; }
+.kiosk-lock-btn.locked {
+  opacity: 1;
+  background: #FFD93D;
+  animation: lockGlow 2s ease-in-out infinite;
+}
+@keyframes lockGlow {
+  0%, 100% { box-shadow: 0 4px 0 #2a2a3e, 0 0 0 0 rgba(255, 217, 61, 0.5); }
+  50% { box-shadow: 0 4px 0 #2a2a3e, 0 0 0 8px rgba(255, 217, 61, 0); }
+}
+
+/* ---------- THE SHIELD (blocks taps when locked) ---------- */
+.kiosk-shield {
+  position: fixed;
+  inset: 0;
+  z-index: 10000; /* below the lock button, above everything else */
+  display: none;
+  background: transparent;
+  touch-action: none;
+}
+.kiosk-shield.active {
+  display: block;
+}
+
+/* ---------- HOLD-TO-UNLOCK HINT ---------- */
+.kiosk-hold-hint {
+  position: fixed;
+  bottom: 70px;
+  right: 10px;
+  z-index: 10002;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+.kiosk-hold-hint.active {
+  display: flex;
+}
+.kiosk-hold-ring {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 5px solid rgba(42, 42, 62, 0.2);
+  border-top-color: #FF3B6C;
+  /* animation set inline by JS: kioskHoldFill 2s */
+}
+@keyframes kioskHoldFill {
+  from { transform: rotate(0deg); border-top-color: #FF3B6C; }
+  to { transform: rotate(1080deg); border-top-color: #6BCB77; }
+}
+.kiosk-hold-text {
+  background: #2a2a3e;
+  color: white;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   TABLET SUPPORT (iPad and larger)
+   ============================================================ */
+@media (min-width: 768px) and (orientation: portrait) {
+  /* Bigger, more spacious layout on tablets */
+  .title { font-size: clamp(4rem, 14vw, 7rem); }
+  .games-grid {
+    max-width: 700px;
+    gap: 24px;
+  }
+  .game-card .emoji { font-size: clamp(4rem, 14vw, 6rem); }
+  .game-card .label { font-size: 1.4rem; }
+  .star-display { font-size: 1.6rem; padding: 16px 30px; }
+
+  /* Letter grid: more columns on tablet */
+  .letter-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .icon-btn { width: 62px; height: 62px; font-size: 1.9rem; }
+  .crayon { width: 70px; height: 70px; }
+  .kiosk-fs-btn, .kiosk-lock-btn { width: 56px; height: 56px; font-size: 1.5rem; }
+}
+
+@media (min-width: 1024px) and (orientation: landscape) {
+  /* Large landscape tablet / desktop */
+  .games-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 800px;
+    gap: 24px;
+  }
+  .game-card .emoji { font-size: 4rem; }
+  .game-card .label { font-size: 1.3rem; }
+  .letter-grid {
+    grid-template-columns: repeat(7, 1fr);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .animal-card { max-width: 400px; }
+}
+
+/* ============================================================
+   OLD / SMALL DEVICES (iPhone 6/7/8, SE - width 320-375)
+   ============================================================ */
+@media (max-width: 375px) {
+  .title { font-size: clamp(2.4rem, 11vw, 3.5rem); }
+  .games-grid { gap: 12px; }
+  .game-card .emoji { font-size: clamp(2.4rem, 12vw, 3.5rem); }
+  .game-card .label { font-size: 0.95rem; }
+  .star-display { font-size: 1.1rem; padding: 10px 18px; }
+  .icon-btn { width: 46px; height: 46px; font-size: 1.4rem; }
+  .crayon { width: 50px; height: 50px; }
+  .letter-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .mode-toggle .mode-btn { font-size: 0.8rem; padding: 5px 9px; }
+}
