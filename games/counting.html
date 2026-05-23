@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#FFD93D" />
-<title>Jamaris Game — Build a Train</title>
+<title>Jamaris Game — Counting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
@@ -14,42 +14,63 @@
 </head>
 <body>
 
-<div class="screen active" id="game">
+<!-- PICKER SCREEN -->
+<div class="screen active" id="picker">
   <div class="top-bar">
     <a href="../index.html" class="icon-btn" aria-label="Home">🏠</a>
-    <div class="train-title">🚂 Build a Train</div>
-    <button class="icon-btn go-btn" id="goBtn" aria-label="Go!">▶️</button>
+    <div class="mini-stars">⭐ <span id="pickerStars">0</span></div>
+    <div style="width:52px;"></div>
   </div>
 
-  <!-- Sky scene with sun and clouds -->
-  <div class="train-scene" id="trainScene">
-    <div class="scene-sun">☀️</div>
-    <div class="scene-cloud" style="top: 15%; left: 10%;">☁️</div>
-    <div class="scene-cloud" style="top: 25%; right: 15%;">☁️</div>
-    <div class="scene-cloud" style="top: 8%; left: 50%;">☁️</div>
-    <div class="scene-mountain"></div>
+  <div class="picker-title">
+    <h1>What to count?</h1>
+    <p>← swipe →</p>
+  </div>
 
-    <!-- Where the train lives -->
-    <div class="train-track" id="trainTrack">
-      <div class="train-cars" id="trainCars"></div>
-      <div class="track-rails"></div>
-      <div class="track-ties" id="trackTies"></div>
+  <div class="animal-carousel" id="countCarousel">
+    <!-- Cards inserted by JS -->
+  </div>
+</div>
+
+<!-- COUNTING SCREEN -->
+<div class="screen" id="game">
+  <div class="top-bar">
+    <button class="icon-btn" id="backBtn" aria-label="Back">⬅️</button>
+    <div class="count-badge">
+      <span id="currentCount">0</span> / <span id="targetCount">1</span>
     </div>
+    <button class="icon-btn" id="resetBtn" aria-label="Restart">🔄</button>
   </div>
 
-  <!-- Parts shelf - drag cars from here -->
-  <div class="parts-shelf-wrap">
-    <div class="parts-label">Drag cars onto the tracks!</div>
-    <div class="parts-shelf" id="partsShelf"></div>
+  <div class="number-display">
+    <div class="number-label">Count to</div>
+    <div class="big-number" id="bigNumber">1</div>
+  </div>
+
+  <div class="counting-wrap" id="countingWrap">
+    <!-- Objects spawned by JS -->
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
   </div>
 </div>
 
 <!-- Celebration -->
 <div class="celebrate" id="celebrate">
-  <div class="msg" id="celebrateMsg">CHOO CHOO!</div>
+  <div class="msg" id="celebrateMsg">YAY!</div>
+</div>
+
+<!-- Number-complete overlay -->
+<div class="number-complete" id="numberComplete">
+  <div class="number-complete-inner">
+    <div class="trophy">🏆</div>
+    <div class="big-number-done" id="completedNumber">1</div>
+    <div class="next-msg">Tap to keep going!</div>
+  </div>
 </div>
 
 <script src="../js/kiosk.js"></script>
-<script src="../js/train.js"></script>
+<script src="../js/counting.js"></script>
 </body>
 </html>
