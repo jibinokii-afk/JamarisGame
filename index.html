@@ -6,60 +6,208 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#FFD93D" />
-<title>Jamaris Game</title>
+<title>Jamaris's Pet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bowlby+One&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/pet.css">
 </head>
-<body class="home-body">
-<div class="screen active" id="home">
-  <div class="floater" style="top: 18%; left: 8%; animation-delay: 0s;">⭐</div>
-  <div class="floater" style="top: 22%; right: 10%; animation-delay: 1.5s;">🌈</div>
-  <div class="floater" style="bottom: 30%; left: 5%; animation-delay: 3s;">🎈</div>
-  <div class="floater" style="bottom: 35%; right: 6%; animation-delay: 2s;">✨</div>
+<body class="pet-body">
 
-  <div class="title-wrap">
-    <div class="title">
-      <span>J</span><span>A</span><span>M</span><span>A</span><span>R</span><span>I</span><span>S</span>
+<!-- ============ PET CHOOSER (first time only) ============ -->
+<div class="screen" id="chooserScreen">
+  <div class="chooser-title">
+    <h1>Choose your pet!</h1>
+    <p>~ which one do you want? ~</p>
+  </div>
+  <div class="pet-chooser-grid" id="petChooserGrid">
+    <!-- Pet options inserted by JS -->
+  </div>
+</div>
+
+<!-- ============ MAIN PET HOME ============ -->
+<div class="screen active" id="petHome">
+
+  <!-- Top: pet name + level + XP -->
+  <div class="pet-header">
+    <div class="pet-name-tag">
+      <span class="pet-name" id="petName">Pet</span>
+      <span class="pet-level-badge">Lv <span id="petLevel">1</span></span>
     </div>
-    <div class="subtitle">~ let's play! ~</div>
+    <div class="star-count">⭐ <span id="petStars">0</span></div>
   </div>
 
-  <div class="games-grid">
-    <a href="games/coloring.html" class="game-card coloring">
-      <div class="emoji">🎨</div>
-      <div class="label">Coloring</div>
-    </a>
-    <a href="games/dots.html" class="game-card dots">
-      <div class="emoji">✏️</div>
-      <div class="label">Connect Dots</div>
-    </a>
-    <a href="games/counting.html" class="game-card counting">
-      <div class="emoji">🔢</div>
-      <div class="label">Counting</div>
-    </a>
-    <a href="games/shapes.html" class="game-card shapes">
-      <div class="emoji">🧩</div>
-      <div class="label">Shapes</div>
-    </a>
-    <a href="games/train.html" class="game-card train">
-      <div class="emoji">🚂</div>
-      <div class="label">Train</div>
-    </a>
-    <a href="games/letters.html" class="game-card letters">
-      <div class="emoji">🔤</div>
-      <div class="label">Letters</div>
-    </a>
+  <!-- Stat meters -->
+  <div class="stat-meters">
+    <div class="stat-meter" data-stat="hunger">
+      <div class="stat-icon">🍎</div>
+      <div class="stat-bar"><div class="stat-fill" id="hungerFill"></div></div>
+    </div>
+    <div class="stat-meter" data-stat="clean">
+      <div class="stat-icon">🛁</div>
+      <div class="stat-bar"><div class="stat-fill" id="cleanFill"></div></div>
+    </div>
+    <div class="stat-meter" data-stat="energy">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-bar"><div class="stat-fill" id="energyFill"></div></div>
+    </div>
+    <div class="stat-meter" data-stat="happy">
+      <div class="stat-icon">❤️</div>
+      <div class="stat-bar"><div class="stat-fill" id="happyFill"></div></div>
+    </div>
   </div>
 
-  <div class="star-display">
-    <span class="star">⭐</span>
-    <span>Stars: <span id="homeStars">0</span></span>
+  <!-- The pet itself -->
+  <div class="pet-stage" id="petStage">
+    <div class="pet-environment" id="petEnvironment">
+      <div class="sun-or-moon" id="skyObj">☀️</div>
+      <div class="env-cloud" style="top:14%;left:8%;">☁️</div>
+      <div class="env-cloud" style="top:8%;right:12%;">☁️</div>
+      <div class="ground"></div>
+    </div>
+
+    <!-- The pet (built by JS as layered SVG) -->
+    <div class="pet-wrap" id="petWrap">
+      <div class="xp-popup" id="xpPopup"></div>
+      <div class="pet-thought" id="petThought"></div>
+      <div class="pet-body-wrap" id="petBodyWrap">
+        <!-- SVG pet inserted by JS -->
+      </div>
+      <div class="pet-dirt-layer" id="dirtLayer">
+        <!-- Dirt splotches appear here -->
+      </div>
+      <div class="pet-sleep-z" id="sleepZ"></div>
+    </div>
+  </div>
+
+  <!-- 4 main action buttons -->
+  <div class="action-bar">
+    <button class="action-btn feed" id="feedBtn">
+      <div class="action-emoji">🍔</div>
+      <div class="action-label">Feed</div>
+    </button>
+    <button class="action-btn bath" id="bathBtn">
+      <div class="action-emoji">🛁</div>
+      <div class="action-label">Bath</div>
+    </button>
+    <button class="action-btn play" id="playBtn">
+      <div class="action-emoji">🎮</div>
+      <div class="action-label">Play</div>
+    </button>
+    <button class="action-btn sleep" id="sleepBtn">
+      <div class="action-emoji">😴</div>
+      <div class="action-label">Sleep</div>
+    </button>
+  </div>
+</div>
+
+<!-- ============ FEED OVERLAY (Refrigerator) ============ -->
+<div class="overlay" id="feedOverlay">
+  <div class="overlay-header">
+    <button class="icon-btn" id="feedClose">✖️</button>
+    <div class="overlay-title">🍽️ Yummy food!</div>
+    <div style="width:52px;"></div>
+  </div>
+  <div class="fridge-area">
+    <div class="fridge-label">Drag food to your pet!</div>
+    <div class="fridge-shelves" id="fridgeShelves"></div>
+  </div>
+  <div class="feed-pet-target" id="feedPetTarget">
+    <div class="feed-pet-svg" id="feedPetSvg"></div>
+    <div class="feed-hint">↓ drop food here ↓</div>
+  </div>
+</div>
+
+<!-- ============ BATH OVERLAY ============ -->
+<div class="overlay" id="bathOverlay">
+  <div class="overlay-header">
+    <button class="icon-btn" id="bathClose">✖️</button>
+    <div class="overlay-title">🛁 Bath time!</div>
+    <div style="width:52px;"></div>
+  </div>
+  <div class="bath-stage">
+    <div class="bath-water"></div>
+    <div class="bath-pet-wrap" id="bathPetWrap">
+      <div class="bath-pet-svg" id="bathPetSvg"></div>
+      <div class="bath-dirt-layer" id="bathDirtLayer"></div>
+      <div class="bath-bubbles" id="bathBubbles"></div>
+    </div>
+    <div class="bath-tub-front"></div>
+  </div>
+  <div class="bath-hint">Scrub with your finger to clean!</div>
+</div>
+
+<!-- ============ PLAY OVERLAY (Mini-games picker) ============ -->
+<div class="overlay" id="playOverlay">
+  <div class="overlay-header">
+    <button class="icon-btn" id="playClose">✖️</button>
+    <div class="overlay-title">🎮 Play with pet!</div>
+    <div style="width:52px;"></div>
+  </div>
+  <div class="play-grid">
+    <a href="games/coloring.html" class="play-card coloring">
+      <div class="play-emoji">🎨</div>
+      <div class="play-label">Coloring</div>
+    </a>
+    <a href="games/dots.html" class="play-card dots">
+      <div class="play-emoji">✏️</div>
+      <div class="play-label">Dots</div>
+    </a>
+    <a href="games/counting.html" class="play-card counting">
+      <div class="play-emoji">🔢</div>
+      <div class="play-label">Counting</div>
+    </a>
+    <a href="games/shapes.html" class="play-card shapes">
+      <div class="play-emoji">🧩</div>
+      <div class="play-label">Shapes</div>
+    </a>
+    <a href="games/train.html" class="play-card train">
+      <div class="play-emoji">🚂</div>
+      <div class="play-label">Train</div>
+    </a>
+    <a href="games/letters.html" class="play-card letters">
+      <div class="play-emoji">🔤</div>
+      <div class="play-label">Letters</div>
+    </a>
+  </div>
+</div>
+
+<!-- ============ SLEEP OVERLAY ============ -->
+<div class="overlay" id="sleepOverlay">
+  <div class="sleep-night-sky">
+    <div class="sleep-moon">🌙</div>
+    <div class="sleep-stars">
+      <span style="top:20%;left:15%;">⭐</span>
+      <span style="top:30%;right:20%;">✨</span>
+      <span style="top:15%;left:60%;">⭐</span>
+      <span style="top:45%;left:30%;">✨</span>
+      <span style="top:25%;right:40%;">⭐</span>
+    </div>
+  </div>
+  <div class="sleep-pet-wrap" id="sleepPetWrap">
+    <div class="sleep-pet-svg" id="sleepPetSvg"></div>
+    <div class="sleep-zzz">
+      <span class="zzz1">Z</span>
+      <span class="zzz2">Z</span>
+      <span class="zzz3">z</span>
+    </div>
+  </div>
+  <div class="sleep-bed"></div>
+  <button class="wake-btn" id="wakeBtn">☀️ Wake up!</button>
+</div>
+
+<!-- ============ LEVEL UP CELEBRATION ============ -->
+<div class="level-up-celebrate" id="levelUpCelebrate">
+  <div class="level-up-inner">
+    <div class="level-up-burst">⭐</div>
+    <div class="level-up-title">LEVEL UP!</div>
+    <div class="level-up-num">Lv <span id="levelUpNumDisplay">2</span></div>
+    <div class="level-up-msg" id="levelUpMsg">Your pet is growing!</div>
   </div>
 </div>
 
 <script src="js/kiosk.js"></script>
-<script src="js/home.js"></script>
+<script src="js/pet.js"></script>
 </body>
 </html>
